@@ -1,13 +1,11 @@
 package org.k1.simplebankapp.seeder;
 
+import org.k1.simplebankapp.entity.Account;
 import org.k1.simplebankapp.entity.User;
 import org.k1.simplebankapp.entity.oauth2.Client;
 import org.k1.simplebankapp.entity.oauth2.Role;
 import org.k1.simplebankapp.entity.oauth2.RolePath;
-import org.k1.simplebankapp.repository.UserRepository;
-import org.k1.simplebankapp.repository.ClientRepository;
-import org.k1.simplebankapp.repository.RolePathRepository;
-import org.k1.simplebankapp.repository.RoleRepository;
+import org.k1.simplebankapp.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.transaction.Transactional;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +45,10 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Autowired
     private RolePathRepository rolePathRepository;
 
-    private String defaultPassword = "p4ssw0rds1mpl3b4nk";
+    @Autowired
+    private AccountRepository accountRepository;
+
+    private String defaultPassword = "password";
 
     private String[] users = new String[]{
             "admin@mail.com:ROLE_SUPERUSER ROLE_USER ROLE_ADMIN",
@@ -78,6 +84,7 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertRoles();
         this.insertClients(password);
         this.insertUser(password);
+        this.insertAccount(password);
     }
 
     @Transactional
@@ -157,6 +164,33 @@ public class DatabaseSeeder implements ApplicationRunner {
             }
 
             userRepository.save(oldUser);
+        }
+    }
+
+    @Transactional
+    public void insertAccount(String password) {
+        int counter = 0;
+        for (String userNames : users) {
+            Account account = new Account();
+            account.setNo("373765759821356" + counter);
+            account.setType("MEMBER");
+            account.setCardNumber("373765759821351" + counter);
+            account.setExpDate("05/28");
+            account.setBalance(BigInteger.valueOf(1000000));
+            String[] str = userNames.split(":");
+            String username = str[0];
+            String[] roleNames = str[1].split("\\s");
+            User user = userRepository.findByUsername(username);
+            if (null == user) {
+                user = new User();
+                user.setUsername(username);
+                user.setPassword(password);
+                List<Role> r = roleRepository.findByNameIn(roleNames);
+                user.setRoles(r);
+            }
+            account.setUser(user);
+            accountRepository.save(account);
+            counter++;
         }
     }
 }
