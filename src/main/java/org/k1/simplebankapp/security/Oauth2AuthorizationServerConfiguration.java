@@ -1,7 +1,7 @@
 package org.k1.simplebankapp.security;
 
-import org.k1.simplebankapp.service.impl.oauth.Oauth2ClientDetailServiceImpl;
-import org.k1.simplebankapp.service.impl.oauth.Oauth2UserDetailServiceImpl;
+import org.k1.simplebankapp.serviceimpl.oauth.Oauth2ClientDetailServiceImpl;
+import org.k1.simplebankapp.serviceimpl.oauth.Oauth2UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,4 +1,4 @@
-package org.k1.simplebankapp.service.impl.oauth;
+package org.k1.simplebankapp.serviceimpl.oauth;
 
 import org.k1.simplebankapp.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package org.k1.simplebankapp.service.impl.oauth;
+package org.k1.simplebankapp.serviceimpl.oauth;
 
 import org.k1.simplebankapp.entity.User;
 import org.k1.simplebankapp.repository.UserRepository;
