@@ -15,7 +15,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "customer")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,6 +32,12 @@ public class User extends BaseDate implements UserDetails {
     @Column(name = "password")
     @JsonIgnore
     private String password;
+
+    @Column(name = "fullname")
+    private String fullname;
+
+    @Column(name = "pin", length = 6)
+    private String pin;
 
     @JsonIgnore
     private String verifyToken;
