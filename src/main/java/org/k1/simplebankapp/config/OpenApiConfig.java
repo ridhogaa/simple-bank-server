@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Configuration;
         servers = {
                 @Server(description = "dev env",
                         url = "http://localhost:8080/api"),
+                @Server(description = "stg env",
+                        url = "https://cautious-noelyn-ridho-71c54445.koyeb.app/api"),
         }
 
 )
