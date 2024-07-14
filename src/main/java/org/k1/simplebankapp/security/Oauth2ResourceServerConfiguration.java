@@ -1,6 +1,7 @@
 package org.k1.simplebankapp.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -18,6 +20,15 @@ import java.util.Map;
 @EnableResourceServer
 @EnableGlobalMethodSecurity(securedEnabled = true) //secure definition
 public class Oauth2ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
+
+    @Autowired
+    private CustomLogoutHandler customLogoutHandler;
+
+    @Autowired
+    private CustomLogoutSuccessHandler customLogoutSuccessHandler;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] WHITE_LIST_URL = {
             "/error**",
@@ -70,8 +81,16 @@ public class Oauth2ResourceServerConfiguration extends ResourceServerConfigurerA
                 .anyRequest()
                 .authenticated()
                 .and()
-                .formLogin()
-                .permitAll();
+                .logout(httpSecurityLogoutConfigurer -> {
+                    httpSecurityLogoutConfigurer
+                            .logoutUrl("/v1/auth/logout")
+                            .addLogoutHandler(customLogoutHandler)
+                            .logoutSuccessHandler(customLogoutSuccessHandler)
+                            .invalidateHttpSession(true)
+                            .deleteCookies("JSESSIONID")
+                            .permitAll();;
+                })
+                .addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
     }
 }
 
