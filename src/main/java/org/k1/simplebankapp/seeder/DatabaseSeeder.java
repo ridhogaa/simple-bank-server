@@ -2,9 +2,9 @@ package org.k1.simplebankapp.seeder;
 
 import org.k1.simplebankapp.entity.Account;
 import org.k1.simplebankapp.entity.User;
-import org.k1.simplebankapp.entity.oauth2.Client;
-import org.k1.simplebankapp.entity.oauth2.Role;
-import org.k1.simplebankapp.entity.oauth2.RolePath;
+import org.k1.simplebankapp.entity.Client;
+import org.k1.simplebankapp.entity.Role;
+import org.k1.simplebankapp.entity.RolePath;
 import org.k1.simplebankapp.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;

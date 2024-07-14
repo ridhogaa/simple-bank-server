@@ -1,9 +1,9 @@
 package org.k1.simplebankapp.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.k1.simplebankapp.dto.auth.LoginRequest;
-import org.k1.simplebankapp.dto.base.BaseResponse;
-import org.k1.simplebankapp.service.auth.AuthService;
+import org.k1.simplebankapp.dto.LoginRequest;
+import org.k1.simplebankapp.dto.BaseResponse;
+import org.k1.simplebankapp.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

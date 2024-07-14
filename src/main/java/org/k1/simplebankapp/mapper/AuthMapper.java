@@ -1,6 +1,6 @@
 package org.k1.simplebankapp.mapper;
 
-import org.k1.simplebankapp.dto.auth.LoginResponse;
+import org.k1.simplebankapp.dto.LoginResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 

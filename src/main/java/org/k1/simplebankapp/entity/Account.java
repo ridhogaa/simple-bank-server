@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
-import org.k1.simplebankapp.entity.base.BaseDate;
 
 import javax.persistence.*;
 import java.math.BigInteger;

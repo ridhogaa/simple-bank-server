@@ -1,6 +1,6 @@
 package org.k1.simplebankapp.repository;
 
-import org.k1.simplebankapp.entity.oauth2.RolePath;
+import org.k1.simplebankapp.entity.RolePath;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
