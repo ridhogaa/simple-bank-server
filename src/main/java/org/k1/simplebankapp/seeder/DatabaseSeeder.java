@@ -153,12 +153,13 @@ public class DatabaseSeeder implements ApplicationRunner {
             String[] str = userNames.split(":");
             String username = str[0];
             String[] roleNames = str[1].split("\\s");
-
+            String fullName = "User Bank";
             User oldUser = userRepository.findByUsername(username);
             if (null == oldUser) {
                 oldUser = new User();
                 oldUser.setUsername(username);
                 oldUser.setPassword(password);
+                oldUser.setFullname(fullName);
                 List<Role> r = roleRepository.findByNameIn(roleNames);
                 oldUser.setRoles(r);
             }

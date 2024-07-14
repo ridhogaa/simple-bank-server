@@ -15,7 +15,7 @@ import java.security.Principal;
 
 @Tag(name = "Account")
 @RestController
-@RequestMapping("v1/account")
+@RequestMapping("v1/accounts")
 public class AccountController {
     @Autowired
     private AccountService accountService;

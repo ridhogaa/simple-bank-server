@@ -3,6 +3,7 @@ package org.k1.simplebankapp.security;
 import org.k1.simplebankapp.serviceimpl.oauth.Oauth2ClientDetailServiceImpl;
 import org.k1.simplebankapp.serviceimpl.oauth.Oauth2UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,7 +13,12 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 @EnableAuthorizationServer
@@ -35,6 +41,9 @@ public class Oauth2AuthorizationServerConfiguration extends AuthorizationServerC
 
     @Autowired
     private TokenStore tokenStore;
+
+    @Autowired
+    private CustomTokenEnhancer customTokenEnhancer;
 
     /**
      * Change server config, password encoder etc.
@@ -63,7 +72,20 @@ public class Oauth2AuthorizationServerConfiguration extends AuthorizationServerC
                 .tokenStore(tokenStore)
                 .accessTokenConverter(accessTokenConverter)
                 .userDetailsService(userDetailsService)
+                .tokenEnhancer(tokenEnhancerChain())
         ;
+    }
+
+    @Bean
+    public TokenEnhancerChain tokenEnhancerChain() {
+        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        List<TokenEnhancer> enhancers = new ArrayList<>();
+
+        enhancers.add(customTokenEnhancer);
+        enhancers.add((TokenEnhancer) accessTokenConverter);
+
+        tokenEnhancerChain.setTokenEnhancers(enhancers);
+        return tokenEnhancerChain;
     }
 }
 
