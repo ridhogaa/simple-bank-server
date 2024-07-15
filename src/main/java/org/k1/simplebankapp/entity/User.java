@@ -36,6 +36,8 @@ public class User extends BaseDate implements UserDetails {
     @Column(name = "pin", length = 6)
     private String pin;
 
+    private String bornDate;
+
     @JsonIgnore
     private String verifyToken;
 
