@@ -2,15 +2,17 @@ package org.k1.simplebankapp.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import org.k1.simplebankapp.entity.enums.AccountType;
 
 import java.math.BigInteger;
+import java.util.Date;
 
 @Data
 @Builder
 public class AccountResponse {
     private String noAccount;
-    private String type;
+    private AccountType accountType;
     private String cardNumber;
-    private String expDate;
-    private BigInteger balance;
+    private Date expDate;
+    private Double balance;
 }

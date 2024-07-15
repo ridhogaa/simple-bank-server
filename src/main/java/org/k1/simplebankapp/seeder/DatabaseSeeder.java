@@ -166,28 +166,6 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Transactional
     public void insertAccount(String password) {
-        int counter = 0;
-        for (String userNames : users) {
-            Account account = new Account();
-            account.setNo("373765759821356" + counter);
-            account.setType("MEMBER");
-            account.setCardNumber("373765759821351" + counter);
-            account.setExpDate("05/28");
-            account.setBalance(BigInteger.valueOf(1000000));
-            String[] str = userNames.split(":");
-            String username = str[0];
-            String[] roleNames = str[1].split("\\s");
-            User user = userRepository.findByUsername(username);
-            if (null == user) {
-                user = new User();
-                user.setUsername(username);
-                user.setPassword(password);
-                List<Role> r = roleRepository.findByNameIn(roleNames);
-                user.setRoles(r);
-            }
-            account.setUser(user);
-            accountRepository.save(account);
-            counter++;
-        }
+
     }
 }

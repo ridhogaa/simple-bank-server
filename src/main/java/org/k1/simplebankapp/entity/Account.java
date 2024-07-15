@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
+import org.k1.simplebankapp.entity.enums.AccountType;
 
 import javax.persistence.*;
-import java.math.BigInteger;
+import java.util.Date;
 
 @Entity
 @Table(name = "account")
@@ -20,14 +21,18 @@ public class Account extends BaseDate {
     @Column(name = "no")
     private String no;
 
-    @Column(name = "type")
-    private String type;
-    @Column(name = "card_number")
+    @Column(nullable = false)
+    private double balance;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountType accountType;
+
+    @Column(name = "atm_card_no", length = 100, nullable = false)
     private String cardNumber;
-    @Column(name = "exp_date")
-    private String expDate;
-    @Column(name = "balance")
-    private BigInteger balance;
+
+    @Column(name = "exp_date", nullable = false)
+    private Date expDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")

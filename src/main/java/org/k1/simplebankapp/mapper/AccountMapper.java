@@ -9,7 +9,7 @@ public class AccountMapper {
     public AccountResponse toAccountResponse(Account account) {
         return AccountResponse.builder()
                 .noAccount(account.getNo())
-                .type(account.getType())
+                .accountType(account.getAccountType())
                 .cardNumber(account.getCardNumber())
                 .expDate(account.getExpDate())
                 .balance(account.getBalance())
