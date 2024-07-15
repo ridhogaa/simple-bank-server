@@ -160,6 +160,7 @@ public class DatabaseSeeder implements ApplicationRunner {
                 oldUser.setUsername(username);
                 oldUser.setPassword(password);
                 oldUser.setFullname(fullName);
+                oldUser.setPin("123456");
                 oldUser.setBornDate("2002-11-22");
                 List<Role> r = roleRepository.findByNameIn(roleNames);
                 oldUser.setRoles(r);
