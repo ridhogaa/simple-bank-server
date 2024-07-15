@@ -5,6 +5,7 @@ import org.k1.simplebankapp.entity.User;
 import org.k1.simplebankapp.entity.Client;
 import org.k1.simplebankapp.entity.Role;
 import org.k1.simplebankapp.entity.RolePath;
+import org.k1.simplebankapp.entity.enums.AccountType;
 import org.k1.simplebankapp.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -166,6 +170,30 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Transactional
     public void insertAccount(String password) {
-
+        int counter = 0;
+        LocalDate localDate = LocalDate.of(2025, 11, 22);
+        Date customDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        for (String userNames : users) {
+            Account account = new Account();
+            account.setNo("373765759821356" + counter);
+            account.setAccountType(AccountType.DEPOSIT);
+            account.setCardNumber("373765759821351" + counter);
+            account.setExpDate(customDate);
+            account.setBalance(1000000000L);
+            String[] str = userNames.split(":");
+            String username = str[0];
+            String[] roleNames = str[1].split("\\s");
+            User user = userRepository.findByUsername(username);
+            if (null == user) {
+                user = new User();
+                user.setUsername(username);
+                user.setPassword(password);
+                List<Role> r = roleRepository.findByNameIn(roleNames);
+                user.setRoles(r);
+            }
+            account.setUser(user);
+            accountRepository.save(account);
+            counter++;
+        }
     }
 }

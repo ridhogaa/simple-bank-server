@@ -13,6 +13,7 @@ public class AccountMapper {
                 .cardNumber(account.getCardNumber())
                 .expDate(account.getExpDate())
                 .balance(account.getBalance())
+                .fullName(account.getUser().getFullname())
                 .build();
     }
 }

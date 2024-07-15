@@ -11,6 +11,7 @@ import java.util.Date;
 @Builder
 public class AccountResponse {
     private String noAccount;
+    private String fullName;
     private AccountType accountType;
     private String cardNumber;
     private Date expDate;
