@@ -60,6 +60,9 @@ public class DatabaseSeeder implements ApplicationRunner {
             "userbank6:ROLE_USER",
             "userbank7:ROLE_USER",
             "userbank8:ROLE_USER",
+            "qa.api:ROLE_USER",
+            "qa.mobile:ROLE_USER",
+            "qa.website:ROLE_USER",
     };
 
     private String[] clients = new String[]{
@@ -178,7 +181,7 @@ public class DatabaseSeeder implements ApplicationRunner {
         for (String userNames : users) {
             Account account = new Account();
             account.setNo("373765759821356" + counter);
-            account.setAccountType(AccountType.DEPOSIT);
+            account.setAccountType(AccountType.SAVING);
             account.setCardNumber("373765759821351" + counter);
             account.setExpDate(customDate);
             account.setBalance(1000000000L);
