@@ -40,17 +40,6 @@ public class Transaction extends BaseDate {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status;
-
-    @Column(name = "transaction_date")
-    private Date transactionDate;
-
-    private Double total;
-
-    @Column(name = "is_balance_add", nullable = false)
-    private boolean isBalanceAdd;
-
-    @Column(nullable = false)
-    private Date timestamp;
 }
 
 

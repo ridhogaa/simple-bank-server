@@ -12,4 +12,8 @@ import lombok.NoArgsConstructor;
 public class TransactionPendingResponse {
     private String transactionId;
     private String transactionType;
+    private String fullNameAccount;
+    private String fullNameRecipientAccount;
+    private String noAccount;
+    private String noAccountRecipient;
 }

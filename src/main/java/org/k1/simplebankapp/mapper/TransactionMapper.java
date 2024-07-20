@@ -12,6 +12,10 @@ public class TransactionMapper {
         return TransactionPendingResponse.builder()
                 .transactionId(transaction.getId())
                 .transactionType(transaction.getTransactionType().name())
+                .fullNameAccount(transaction.getAccount().getUser().getFullname())
+                .fullNameRecipientAccount(transaction.getRecipientTargetAccount().getUser().getFullname())
+                .noAccount(transaction.getAccount().getNo())
+                .noAccountRecipient(transaction.getRecipientTargetAccount().getNo())
                 .build();
     }
 

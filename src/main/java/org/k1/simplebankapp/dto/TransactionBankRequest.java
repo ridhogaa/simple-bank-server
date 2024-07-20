@@ -4,17 +4,18 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-public class TransactionBCARequest {
+public class TransactionBankRequest {
     @NotBlank
     private String accountNo;
-    @NotBlank
-    private String recipientTargetAccountType;
+    @NotNull
+    private Long recipientTargetAccountType;
     @NotBlank
     private String recipientTargetAccount;
-    @NotBlank
+    @NotNull
     private Double amount;
     private String description;
 }
