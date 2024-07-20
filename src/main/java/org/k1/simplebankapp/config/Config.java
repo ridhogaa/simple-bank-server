@@ -52,4 +52,8 @@ public class Config {
 
         return formattedDate + randomNumber;
     }
+
+    public static Date dateNow = new Date();
+
+    public static Date dateOneMonthLater = new Date(dateNow.getTime() + 30 * 24 * 60 * 60 * 1000);
 }

@@ -1,6 +1,5 @@
 package org.k1.simplebankapp.repository;
 
-import org.k1.simplebankapp.entity.Mutation;
 import org.k1.simplebankapp.entity.QrisPayment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
