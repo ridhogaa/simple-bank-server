@@ -43,9 +43,9 @@ public class MutationServiceImpl implements MutationService {
     ) {
         Account account = accountRepository.findFirstByNo(noAccount).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
         List<MutationResponse> mutationResponseList = new ArrayList<>();
-        mutationRepository.findAllByMonthDayTypeAndAccount(month, day, type, account.getNo(), pageable).forEach(
-                mutation -> mutationResponseList.add(mutationMapper.toMutationResponse(mutation))
-        );
+//        mutationRepository.findMutation(month, day, type, account.getNo(), pageable).forEach(
+//                mutation -> mutationResponseList.add(mutationMapper.toMutationResponse(mutation))
+//        );
         return mutationResponseList;
     }
 }

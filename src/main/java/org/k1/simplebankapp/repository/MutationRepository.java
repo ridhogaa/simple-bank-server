@@ -16,7 +16,15 @@ import java.util.List;
 @Repository
 public interface MutationRepository extends JpaRepository<Mutation, Long>, JpaSpecificationExecutor<Mutation> {
 
-    @Query("SELECT m FROM Mutation m JOIN m.transaction t JOIN t.account a WHERE FUNCTION('MONTH', m.timestamp) = :month AND FUNCTION('DAY', m.timestamp) = :day AND m.mutationType = :type AND a.no = :noAccount")
-    Page<Mutation> findAllByMonthDayTypeAndAccount(@Param("month") int month, @Param("day") int day, @Param("type") MutationType type, String noAccount, Pageable pageable);
+//    @Query(
+//            value = "SELECT m FROM Mutation m JOIN m.transaction t JOIN t.account a WHERE FUNCTION('MONTH', m.timestamp) = :month AND FUNCTION('DAY', m.timestamp) = :day AND m.mutationType = :type AND a.no = :noAccount"
+//            , nativeQuery = true)
+//    Page<Mutation> findMutation(
+//            @Param("month") int month,
+//            @Param("day") int day,
+//            @Param("type") MutationType type,
+//            @Param("noAccount") String noAccount,
+//            Pageable pageable
+//    );
 
 }
