@@ -64,6 +64,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (sourceAccount.getBalance() < request.getAmount()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance!");
         }
+        Date dateNow = new Date();
         Transaction transaction = new Transaction();
         transaction.setId(Config.generateTransactionId() + transactionRepository.count() + 1);
         transaction.setAccount(sourceAccount);
@@ -72,10 +73,10 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setAmount(request.getAmount());
         transaction.setDescription(request.getDescription());
         transaction.setStatus(TransactionStatus.PENDING);
-        transaction.setTransactionDate(new Date());
+        transaction.setTransactionDate(dateNow);
         transaction.setTotal(request.getAmount());
         transaction.setBalanceAdd(false);
-        transaction.setTimestamp(new Date());
+        transaction.setTimestamp(dateNow);
         transactionRepository.save(transaction);
         return transactionMapper.toTransactionResponse(transaction);
     }
@@ -88,22 +89,22 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = transactionRepository.findFirstByIdAndTransactionType(request.getTransactionId(), request.getTransactionType()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found!"));
         Account sourceAccount = accountRepository.findFirstByNo(transaction.getAccount().getNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
         Account accountRecipient = accountRepository.findFirstByNo(transaction.getRecipientTargetAccount().getNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account recipient not found!"));
-
+        Date dateNow = new Date();
         sourceAccount.setBalance(sourceAccount.getBalance() - transaction.getAmount());
         accountRecipient.setBalance(accountRecipient.getBalance() + transaction.getAmount());
         accountRepository.save(sourceAccount);
         accountRepository.save(accountRecipient);
 
         transaction.setStatus(TransactionStatus.SUCCESS);
-        transaction.setTransactionDate(new Date());
-        transaction.setTimestamp(new Date());
+        transaction.setTransactionDate(dateNow);
+        transaction.setTimestamp(dateNow);
 
         transactionRepository.save(transaction);
 
         Mutation mutation = new Mutation();
         mutation.setTransaction(transaction);
         mutation.setMutationType(MutationType.PENGELUARAN);
-        mutation.setTimestamp(new Date());
+        mutation.setTimestamp(dateNow);
         mutationRepository.save(mutation);
         return transactionMapper.toTransactionSuccessResponse(transaction);
     }
