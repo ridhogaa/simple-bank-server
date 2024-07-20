@@ -15,4 +15,7 @@ public interface AccountRepository extends JpaRepository<Account, String>, JpaSp
     List<Account> findAllByUser(User user);
 
     Optional<Account> findFirstByNo(String no);
+    Optional<Account> findFirstByNoAndUser(String no, User user);
+
+    Optional<Account> findFirstByNoAndBankId(String no, Long id);
 }
