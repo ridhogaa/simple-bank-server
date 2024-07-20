@@ -11,10 +11,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(title = "Simple Bank API", version = "1.0"),
-        security = @SecurityRequirement(name = "bearerAuth"),
         servers = {
                 @Server(description = "dev env",
                         url = "http://localhost:8080/api"),
+                @Server(description = "stg env",
+                        url = "https://cautious-noelyn-ridho-71c54445.koyeb.app/api"),
         }
 
 )

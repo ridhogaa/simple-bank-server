@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
-import org.k1.simplebankapp.entity.base.BaseDate;
-import org.k1.simplebankapp.entity.oauth2.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -38,6 +35,8 @@ public class User extends BaseDate implements UserDetails {
 
     @Column(name = "pin", length = 6)
     private String pin;
+
+    private String bornDate;
 
     @JsonIgnore
     private String verifyToken;

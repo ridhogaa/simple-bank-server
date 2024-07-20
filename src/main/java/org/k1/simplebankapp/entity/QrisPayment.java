@@ -5,53 +5,39 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 import org.k1.simplebankapp.entity.enums.TransactionStatus;
-import org.k1.simplebankapp.entity.enums.TransactionType;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Set;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "qris_payment")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Where(clause = "deleted_date is null")
-public class Transaction extends BaseDate {
+public class QrisPayment extends BaseDate{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long qrisPaymentId;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "recipient_target_account", nullable = false)
-    private Account recipientTargetAccount;
+    @JoinColumn(name = "transaction_id", nullable = false)
+    private Transaction transaction;
 
-    @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
+    @Column(name = "recipient_account_no", nullable = false)
+    private Long recipientAccountNo;
 
     @Column(nullable = false)
-    private double amount;
+    private Long amount;
 
-    private String description;
+    @Column(name = "payment_date", nullable = false)
+    private Date paymentDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private TransactionStatus status;
 
-    @Column(name = "transaction_date")
-    private Date transactionDate;
-
-    private Long total;
-
-    @Column(name = "is_balance_add", nullable = false)
-    private boolean isBalanceAdd;
-
-    @Column(nullable = false)
-    private Date timestamp;
 }
-
-

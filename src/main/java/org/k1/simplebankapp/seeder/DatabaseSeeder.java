@@ -2,9 +2,10 @@ package org.k1.simplebankapp.seeder;
 
 import org.k1.simplebankapp.entity.Account;
 import org.k1.simplebankapp.entity.User;
-import org.k1.simplebankapp.entity.oauth2.Client;
-import org.k1.simplebankapp.entity.oauth2.Role;
-import org.k1.simplebankapp.entity.oauth2.RolePath;
+import org.k1.simplebankapp.entity.Client;
+import org.k1.simplebankapp.entity.Role;
+import org.k1.simplebankapp.entity.RolePath;
+import org.k1.simplebankapp.entity.enums.AccountType;
 import org.k1.simplebankapp.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +16,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -60,6 +60,9 @@ public class DatabaseSeeder implements ApplicationRunner {
             "userbank6:ROLE_USER",
             "userbank7:ROLE_USER",
             "userbank8:ROLE_USER",
+            "qa.api:ROLE_USER",
+            "qa.mobile:ROLE_USER",
+            "qa.website:ROLE_USER",
     };
 
     private String[] clients = new String[]{
@@ -153,12 +156,15 @@ public class DatabaseSeeder implements ApplicationRunner {
             String[] str = userNames.split(":");
             String username = str[0];
             String[] roleNames = str[1].split("\\s");
-
+            String fullName = "User Bank";
             User oldUser = userRepository.findByUsername(username);
             if (null == oldUser) {
                 oldUser = new User();
                 oldUser.setUsername(username);
                 oldUser.setPassword(password);
+                oldUser.setFullname(fullName);
+                oldUser.setPin("123456");
+                oldUser.setBornDate("2002-11-22");
                 List<Role> r = roleRepository.findByNameIn(roleNames);
                 oldUser.setRoles(r);
             }
@@ -170,13 +176,15 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Transactional
     public void insertAccount(String password) {
         int counter = 0;
+        LocalDate localDate = LocalDate.of(2025, 11, 22);
+        Date customDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         for (String userNames : users) {
             Account account = new Account();
             account.setNo("373765759821356" + counter);
-            account.setType("MEMBER");
+            account.setAccountType(AccountType.SAVING);
             account.setCardNumber("373765759821351" + counter);
-            account.setExpDate("05/28");
-            account.setBalance(BigInteger.valueOf(1000000));
+            account.setExpDate(customDate);
+            account.setBalance(1000000000L);
             String[] str = userNames.split(":");
             String username = str[0];
             String[] roleNames = str[1].split("\\s");

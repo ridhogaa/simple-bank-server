@@ -1,15 +1,12 @@
 package org.k1.simplebankapp.repository;
 
-
-import org.k1.simplebankapp.entity.Client;
+import org.k1.simplebankapp.entity.QrisPayment;
+import org.k1.simplebankapp.entity.TopupEwallet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecificationExecutor<Client> {
-
-    Client findOneByClientId(String clientId);
+public interface TopupEwalletRepository extends JpaRepository<TopupEwallet, Long>, JpaSpecificationExecutor<TopupEwallet> {
 
 }
-
