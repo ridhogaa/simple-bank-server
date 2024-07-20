@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.k1.simplebankapp.entity.enums.TransactionStatus;
 
 @Data
 @Builder
@@ -14,4 +15,5 @@ public class MutationResponse {
     private double amount;
     private String transactionType;
     private String recipientTargetAccount;
+    private TransactionStatus transactionStatus;
 }

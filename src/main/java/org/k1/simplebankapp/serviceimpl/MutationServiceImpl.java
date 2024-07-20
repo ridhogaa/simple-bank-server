@@ -7,15 +7,15 @@ import org.k1.simplebankapp.entity.User;
 import org.k1.simplebankapp.entity.enums.MutationType;
 import org.k1.simplebankapp.mapper.MutationMapper;
 import org.k1.simplebankapp.repository.AccountRepository;
-import org.k1.simplebankapp.repository.MutationRepository;
+import org.k1.simplebankapp.repository.TransactionRepository;
 import org.k1.simplebankapp.repository.UserRepository;
 import org.k1.simplebankapp.service.MutationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.awt.print.Pageable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.List;
 public class MutationServiceImpl implements MutationService {
 
     @Autowired
-    private MutationRepository mutationRepository;
+    private TransactionRepository transactionRepository;
 
     @Autowired
     private AccountRepository accountRepository;
@@ -33,19 +33,33 @@ public class MutationServiceImpl implements MutationService {
     @Autowired
     private MutationMapper mutationMapper;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public List<MutationResponse> findAllByMonthAndDayAndType(
             int month,
             int day,
             MutationType type,
             String noAccount,
-            Pageable pageable
+            Pageable pageable,
+            Principal principal
     ) {
-        Account account = accountRepository.findFirstByNo(noAccount).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
+        User user = userRepository.findByUsername(principal.getName());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
+        }
+        Account account = accountRepository.findFirstByNoAndUser(noAccount, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
         List<MutationResponse> mutationResponseList = new ArrayList<>();
-//        mutationRepository.findMutation(month, day, type, account.getNo(), pageable).forEach(
-//                mutation -> mutationResponseList.add(mutationMapper.toMutationResponse(mutation))
-//        );
+        if (type == MutationType.PENGELUARAN) {
+            transactionRepository.findAllAsThisAccount(account.getNo(), month, day, pageable).forEach(transaction -> {
+                mutationResponseList.add(mutationMapper.toMutationResponse(transaction));
+            });
+        } else if (type == MutationType.PEMASUKAN) {
+            transactionRepository.findAllAsRecipientAccount(account.getNo(), month, day, pageable).forEach(transaction -> {
+                mutationResponseList.add(mutationMapper.toMutationResponse(transaction));
+            });
+        }
         return mutationResponseList;
     }
 }
