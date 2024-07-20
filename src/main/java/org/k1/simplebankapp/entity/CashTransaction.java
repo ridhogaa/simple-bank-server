@@ -38,7 +38,6 @@ public class CashTransaction extends BaseDate {
     @Column(name = "payment_code", nullable = false)
     private Long paymentCode;
 
-    @Column(nullable = false)
-    private Date timestamp;
+    
 }
 

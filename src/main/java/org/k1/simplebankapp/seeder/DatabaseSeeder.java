@@ -1,10 +1,6 @@
 package org.k1.simplebankapp.seeder;
 
-import org.k1.simplebankapp.entity.Account;
-import org.k1.simplebankapp.entity.User;
-import org.k1.simplebankapp.entity.Client;
-import org.k1.simplebankapp.entity.Role;
-import org.k1.simplebankapp.entity.RolePath;
+import org.k1.simplebankapp.entity.*;
 import org.k1.simplebankapp.entity.enums.AccountType;
 import org.k1.simplebankapp.repository.*;
 import org.slf4j.Logger;
@@ -48,6 +44,9 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private BankRepository bankRepository;
+
     private String defaultPassword = "password";
 
     private String[] users = new String[]{
@@ -78,12 +77,23 @@ public class DatabaseSeeder implements ApplicationRunner {
             "ROLE_WRITE:oauth_role:^/.*:GET|PUT|POST|PATCH|DELETE|OPTIONS"
     };
 
+    private String[] banks = new String[]{
+            "BCA",
+            "BRI",
+            "Mandiri",
+            "BNI",
+            "Permata Bank",
+            "Superbank",
+            "BTPN"
+    };
+
 
     @Override
     @Transactional
     public void run(ApplicationArguments applicationArguments) {
         String password = encoder.encode(defaultPassword);
 
+        this.insertBanks();
         this.insertRoles();
         this.insertClients(password);
         this.insertUser(password);
@@ -185,6 +195,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             account.setCardNumber("373765759821351" + counter);
             account.setExpDate(customDate);
             account.setBalance(1000000000L);
+            account.setBank(bankRepository.findById(1L).get());
             String[] str = userNames.split(":");
             String username = str[0];
             String[] roleNames = str[1].split("\\s");
@@ -199,6 +210,18 @@ public class DatabaseSeeder implements ApplicationRunner {
             account.setUser(user);
             accountRepository.save(account);
             counter++;
+        }
+    }
+
+    @Transactional
+    public void insertBanks() {
+        if (bankRepository.count() == 0) {
+            for (String bank : banks) {
+                Bank newBank = new Bank();
+                newBank.setBankName(bank);
+                newBank.setBiayaAdmin(bank.equals("BCA") ? 0 : 2500);
+                bankRepository.save(newBank);
+            }
         }
     }
 }

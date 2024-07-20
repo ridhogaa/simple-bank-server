@@ -19,8 +19,7 @@ import java.util.Set;
 @Where(clause = "deleted_date is null")
 public class Transaction extends BaseDate {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false)
@@ -41,17 +40,6 @@ public class Transaction extends BaseDate {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status;
-
-    @Column(name = "transaction_date")
-    private Date transactionDate;
-
-    private Long total;
-
-    @Column(name = "is_balance_add", nullable = false)
-    private boolean isBalanceAdd;
-
-    @Column(nullable = false)
-    private Date timestamp;
 }
 
 
