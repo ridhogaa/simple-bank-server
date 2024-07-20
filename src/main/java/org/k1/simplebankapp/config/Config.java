@@ -6,6 +6,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
@@ -38,5 +40,16 @@ public class Config {
         }
 
         return salt.toString();
+    }
+
+    public static String generateTransactionId() {
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formattedDate = currentDate.format(formatter);
+
+        Random random = new Random();
+        int randomNumber = random.nextInt(900000) + 100000; // Ensure 6 digits
+
+        return formattedDate + randomNumber;
     }
 }
