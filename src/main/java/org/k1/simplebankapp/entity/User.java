@@ -9,6 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -23,7 +25,7 @@ public class User extends BaseDate implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username",unique = true)
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "password")
@@ -36,8 +38,13 @@ public class User extends BaseDate implements UserDetails {
     @Column(name = "pin", length = 6)
     private String pin;
 
-    private String bornDate;
-    @Column(name = "phone_number")
+    @Column(name = "born_date")
+    private LocalDateTime bornDate;
+
+    @Column(name = "email", unique = true)
+    private String email;
+
+    @Column(name = "phoneNumber", unique = true)
     private String phoneNumber;
 
     @JsonIgnore
@@ -79,12 +86,8 @@ public class User extends BaseDate implements UserDetails {
     private List<Role> roles = new ArrayList<>();
 
     @JsonIgnore
-    @Column(name = "login_attempts")
-    private int loginAttempts = 0;
-
-    @JsonIgnore
-    @Column(name = "lock_time")
-    private Date lockTime;
+    @Column(name = "login_attempts", nullable = false)
+    private Integer loginAttempts = 0;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,6 +1,8 @@
 package org.k1.simplebankapp.mapper;
 
 import org.k1.simplebankapp.dto.LoginResponse;
+import org.k1.simplebankapp.dto.ProfileResponse;
+import org.k1.simplebankapp.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,14 @@ public class AuthMapper {
                 .expiresIn(response.getBody().get("expires_in"))
                 .scope(response.getBody().get("scope"))
                 .jti(response.getBody().get("jti"))
+                .build();
+    }
+
+    public ProfileResponse toProfileResponse(User user) {
+        return ProfileResponse.builder()
+                .username(user.getUsername())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
                 .build();
     }
 }

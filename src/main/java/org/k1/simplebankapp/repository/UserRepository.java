@@ -18,8 +18,4 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     User findByUsername(String username);
 
     Optional<User> findFirstByUsernameAndPin(String username, String pin);
-
-    @Modifying
-    @Query("UPDATE User u SET u.loginAttempts = ?1 WHERE u.username = ?2")
-    void updateFailedAttempts(int loginAttempts, String username);
 }
