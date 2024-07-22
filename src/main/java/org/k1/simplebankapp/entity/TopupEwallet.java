@@ -39,7 +39,6 @@ public class TopupEwallet extends BaseDate {
     @JoinColumn(name = "transaction_id", nullable = false)
     private Transaction transaction;
 
-    @Column(nullable = false)
-    private Date timestamp;
+    
 
 }

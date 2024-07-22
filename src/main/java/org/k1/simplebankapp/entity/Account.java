@@ -37,4 +37,8 @@ public class Account extends BaseDate {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "bank_id")
+    private Bank bank;
 }
