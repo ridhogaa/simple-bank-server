@@ -75,9 +75,6 @@ public class TransactionServiceImpl implements TransactionService {
         Account sourceAccount = accountRepository.findFirstByNo(transaction.getAccount().getNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
         Account accountRecipient = accountRepository.findFirstByNo(transaction.getRecipientTargetAccount().getNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account recipient not found!"));
 
-        if (transaction.getStatus() == TransactionStatus.SUCCESS) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction already success!");
-        }
         sourceAccount.setBalance(sourceAccount.getBalance() - transaction.getAmount());
         accountRecipient.setBalance(accountRecipient.getBalance() + transaction.getAmount());
         accountRepository.save(sourceAccount);
