@@ -2,6 +2,7 @@ package org.k1.simplebankapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.k1.simplebankapp.dto.BaseResponse;
 import org.k1.simplebankapp.dto.RequestNoAccount;
 import org.k1.simplebankapp.entity.enums.MutationType;
@@ -17,20 +18,31 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("v1/mutations")
+@Tag(name = "Mutation")
 public class MutationController {
 
     @Autowired
     private MutationService mutationService;
 
-    @GetMapping
+    @GetMapping("{noAccount}")
     @Operation(summary = "Mutation transaction", description = "Endpoint to get mutation transaction", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> findAll(
             @RequestParam Integer month,
             @RequestParam(required = false) MutationType type,
-            @RequestBody RequestNoAccount noAccount,
+            @PathVariable String noAccount,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             Principal principal
     ) {
         return ResponseEntity.ok(BaseResponse.success(mutationService.findAllByMonthAndMutationType(month, type, noAccount, pageable, principal), "Success Get All Mutations"));
+    }
+
+    @GetMapping("{noAccount}/amounts")
+    @Operation(summary = "Get amounts", description = "Endpoint to get income", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<?> getAmounts(
+            @RequestParam(required = true) MutationType type,
+            @PathVariable String noAccount,
+            Principal principal
+    ) {
+        return ResponseEntity.ok(BaseResponse.success(mutationService.getSpendingAndIncome(principal, type, noAccount), "Success Get Mutation amounts"));
     }
 }

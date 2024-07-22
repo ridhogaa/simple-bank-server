@@ -23,6 +23,8 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,22 +54,27 @@ public class MutationServiceImpl implements MutationService {
     public List<MutationResponse> findAllByMonthAndMutationType(
             Integer month,
             MutationType type,
-            RequestNoAccount noAccount,
+            String noAccount,
             Pageable pageable,
             Principal principal
     ) {
-        validationService.validate(noAccount);
         User user = userRepository.findByUsername(principal.getName());
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
         }
-        Account account = accountRepository.findFirstByNoAndUser(noAccount.getNoAccount(), user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You dont have access to this account!"));
+        Account account = accountRepository.findFirstByNoAndUser(noAccount, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You dont have access to this account!"));
         Specification<Transaction> spec = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+            LocalDate now = LocalDate.now();
+            LocalDate lastYear = now.minusYears(1);
+
             if (month != null) {
                 Expression<Integer> monthExpression = criteriaBuilder.function("MONTH", Integer.class, root.get("updatedDate"));
                 predicates.add(criteriaBuilder.equal(monthExpression, month));
             }
+
+            Expression<Integer> yearExpression = criteriaBuilder.function("YEAR", Integer.class, root.get("updatedDate"));
+            predicates.add(criteriaBuilder.between(yearExpression, lastYear.getYear(), now.getYear()));
 
             if (type != null) {
                 if (type.equals(MutationType.PENGELUARAN)) {
@@ -87,4 +94,22 @@ public class MutationServiceImpl implements MutationService {
         });
         return mutationResponseList;
     }
+
+    @Override
+    public Map<String, Double> getSpendingAndIncome(Principal principal, MutationType type, String noAccount) {
+        User user = userRepository.findByUsername(principal.getName());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
+        }
+        accountRepository.findFirstByNoAndUser(noAccount, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
+        HashMap<String, Double> map = new HashMap<>();
+        if (type.equals(MutationType.PENGELUARAN)) {
+            map.put("amount", transactionRepository.findSpending(noAccount));
+        } else if (type.equals(MutationType.PEMASUKAN)) {
+            map.put("amount", transactionRepository.findIncome(noAccount));
+        }
+        return map;
+    }
+
+
 }

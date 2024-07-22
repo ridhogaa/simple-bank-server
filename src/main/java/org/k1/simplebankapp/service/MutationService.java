@@ -7,13 +7,20 @@ import org.springframework.data.domain.Pageable;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 public interface MutationService {
     List<MutationResponse> findAllByMonthAndMutationType(
             Integer month,
             MutationType type,
-            RequestNoAccount noAccount,
+            String noAccount,
             Pageable pageable,
             Principal principal
+    );
+
+    Map<String, Double> getSpendingAndIncome(
+            Principal principal,
+            MutationType type,
+            String noAccount
     );
 }
