@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -162,6 +164,7 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Transactional
     public void insertUser(String password) {
+        int counter = 0;
         for (String userNames : users) {
             String[] str = userNames.split(":");
             String username = str[0];
@@ -174,12 +177,16 @@ public class DatabaseSeeder implements ApplicationRunner {
                 oldUser.setPassword(password);
                 oldUser.setFullname(fullName);
                 oldUser.setPin("123456");
-                oldUser.setBornDate("2002-11-22");
+                oldUser.setBornDate(LocalDateTime.of(2002, Month.NOVEMBER, 22, 10, 30, 0));
+                oldUser.setEmail(username + "@mail.com");
+                oldUser.setPhoneNumber("08123456789" + counter);
+                oldUser.setLoginAttempts(0);
                 List<Role> r = roleRepository.findByNameIn(roleNames);
                 oldUser.setRoles(r);
             }
 
             userRepository.save(oldUser);
+            counter++;
         }
     }
 
@@ -191,7 +198,7 @@ public class DatabaseSeeder implements ApplicationRunner {
         for (String userNames : users) {
             Account account = new Account();
             account.setNo("373765759821356" + counter);
-            account.setAccountType(AccountType.SAVING);
+            account.setAccountType(AccountType.GOLD);
             account.setCardNumber("373765759821351" + counter);
             account.setExpDate(customDate);
             account.setBalance(1000000000L);

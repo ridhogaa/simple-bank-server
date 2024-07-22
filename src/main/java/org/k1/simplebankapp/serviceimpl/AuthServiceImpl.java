@@ -46,7 +46,6 @@ public class AuthServiceImpl implements AuthService {
     private String baseUrl;
 
     @Override
-    @Transactional
     public LoginResponse login(LoginRequest request) {
         validationService.validate(request);
         User checkUser = userRepository.findByUsername(request.getUsername());
@@ -70,20 +69,12 @@ public class AuthServiceImpl implements AuthService {
             if (newFailAttempts >= 3) {
                 // Lock the account if failed attempts >= 3
                 checkUser.setAccountNonLocked(false);
-                checkUser.setLockTime(new Date());
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is locked, please change password!");
             }
 
             userRepository.save(checkUser);
-
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username or password invalid");
         }
-
-        // Check if the user is enabled
-        if (!checkUser.isEnabled()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not enabled");
-        }
-
         String url = baseUrl + "/oauth/token?username=" + checkUser.getUsername() +
                 "&password=" + request.getPassword() +
                 "&grant_type=password" +
@@ -93,11 +84,7 @@ public class AuthServiceImpl implements AuthService {
                 ParameterizedTypeReference<Map<Object, Object>>() {
                 }
         );
-
         if (response.getStatusCode() == HttpStatus.OK) {
-            // Reset failed attempts on successful login
-            checkUser.setLoginAttempts(0);
-            userRepository.save(checkUser);
             return authMapper.toLoginResponse(response);
         } else {
             throw new ResponseStatusException(response.getStatusCode(), response.getStatusCode().getReasonPhrase());
