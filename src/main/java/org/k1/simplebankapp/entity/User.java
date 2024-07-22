@@ -37,6 +37,8 @@ public class User extends BaseDate implements UserDetails {
     private String pin;
 
     private String bornDate;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @JsonIgnore
     private String verifyToken;
@@ -44,10 +46,10 @@ public class User extends BaseDate implements UserDetails {
     @JsonIgnore
     private Date expiredVerifyToken;
 
-//    @Column(length = 100, nullable = true)
-//    private String otp;
-//
-//    private Date otpExpiredDate;
+    @Column(length = 100)
+    private String otp;
+
+    private Date otpExpiredDate;
 
     @JsonIgnore
     private boolean enabled = true;
@@ -75,6 +77,14 @@ public class User extends BaseDate implements UserDetails {
             }
     )
     private List<Role> roles = new ArrayList<>();
+
+    @JsonIgnore
+    @Column(name = "login_attempts")
+    private int loginAttempts = 0;
+
+    @JsonIgnore
+    @Column(name = "lock_time")
+    private Date lockTime;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
