@@ -87,4 +87,22 @@ public class MutationServiceImpl implements MutationService {
         });
         return mutationResponseList;
     }
+
+    @Override
+    public Map<String, Double> getSpendingAndIncome(Principal principal, MutationType type, String noAccount) {
+        User user = userRepository.findByUsername(principal.getName());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
+        }
+        accountRepository.findFirstByNoAndUser(noAccount, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
+        HashMap<String, Double> map = new HashMap<>();
+        if (type.equals(MutationType.PENGELUARAN)) {
+            map.put("amount", transactionRepository.findSpending(noAccount));
+        } else if (type.equals(MutationType.PEMASUKAN)) {
+            map.put("amount", transactionRepository.findIncome(noAccount));
+        }
+        return map;
+    }
+
+
 }
