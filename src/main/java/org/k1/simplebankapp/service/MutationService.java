@@ -13,7 +13,7 @@ public interface MutationService {
     List<MutationResponse> findAllByMonthAndMutationType(
             Integer month,
             MutationType type,
-            RequestNoAccount noAccount,
+            String noAccount,
             Pageable pageable,
             Principal principal
     );

@@ -24,12 +24,12 @@ public class MutationController {
     @Autowired
     private MutationService mutationService;
 
-    @GetMapping
+    @GetMapping("{noAccount}")
     @Operation(summary = "Mutation transaction", description = "Endpoint to get mutation transaction", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> findAll(
             @RequestParam Integer month,
             @RequestParam(required = false) MutationType type,
-            @RequestBody RequestNoAccount noAccount,
+            @PathVariable String noAccount,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             Principal principal
     ) {
