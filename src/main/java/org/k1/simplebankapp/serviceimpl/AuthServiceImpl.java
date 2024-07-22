@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -49,17 +50,40 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse login(LoginRequest request) {
         validationService.validate(request);
         User checkUser = userRepository.findByUsername(request.getUsername());
-        if ((checkUser != null) && (encoder.matches(request.getPassword(), checkUser.getPassword()))) {
-            if (!checkUser.isEnabled()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not enabled");
-            }
-        }
+
+        // Check if the user exists
         if (checkUser == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username or password invalid");
         }
-        if (!(encoder.matches(request.getPassword(), checkUser.getPassword()))) {
+
+        // Check if the account is locked
+        if (!checkUser.isAccountNonLocked()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is locked due to too many failed login attempts. Please try again later.");
+        }
+
+        // Check if the password matches
+        if (!encoder.matches(request.getPassword(), checkUser.getPassword())) {
+            // Increment failed attempts
+            int newFailAttempts = checkUser.getLoginAttempts() + 1;
+            checkUser.setLoginAttempts(newFailAttempts);
+
+            if (newFailAttempts >= 3) {
+                // Lock the account if failed attempts >= 3
+                checkUser.setAccountNonLocked(false);
+                checkUser.setLockTime(new Date());
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is locked, please change password!");
+            }
+
+            userRepository.save(checkUser);
+
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username or password invalid");
         }
+
+        // Check if the user is enabled
+        if (!checkUser.isEnabled()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not enabled");
+        }
+
         String url = baseUrl + "/oauth/token?username=" + checkUser.getUsername() +
                 "&password=" + request.getPassword() +
                 "&grant_type=password" +
@@ -71,9 +95,17 @@ public class AuthServiceImpl implements AuthService {
         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
+            // Reset failed attempts on successful login
+            checkUser.setLoginAttempts(0);
+            userRepository.save(checkUser);
             return authMapper.toLoginResponse(response);
         } else {
             throw new ResponseStatusException(response.getStatusCode(), response.getStatusCode().getReasonPhrase());
         }
+    }
+
+    @Override
+    public Object forgotPassword() {
+        return null;
     }
 }

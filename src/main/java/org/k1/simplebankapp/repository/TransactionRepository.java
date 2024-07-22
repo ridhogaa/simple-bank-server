@@ -17,35 +17,5 @@ import java.util.Optional;
 public interface TransactionRepository extends JpaRepository<Transaction, String>, JpaSpecificationExecutor<Transaction> {
     Optional<Transaction> findFirstByIdAndTransactionType(String id, TransactionType transactionType);
 
-    @Query(value = "SELECT * FROM transactions" +
-            " WHERE account_id = :noAccount" +
-            " AND EXTRACT(MONTH FROM updated_date) = :month" +
-            " AND EXTRACT(DAY FROM updated_date) = :day" +
-            " order by updated_date desc",
-            countQuery = "SELECT COUNT(*) FROM transactions" +
-                    " WHERE account_id = :noAccount" +
-                    " AND EXTRACT(MONTH FROM updated_date) = :month" +
-                    " AND EXTRACT(DAY FROM updated_date) = :day" +
-                    " order by updated_date desc",
-            nativeQuery = true)
-    Page<Transaction> findAllAsThisAccount(@Param("noAccount") String noAccount,
-                                           @Param("month") int month,
-                                           @Param("day") int day,
-                                           Pageable pageable);
 
-    @Query(value = "SELECT * FROM transactions" +
-            " WHERE recipient_target_account = :noAccount" +
-            " AND EXTRACT(MONTH FROM updated_date) = :month" +
-            " AND EXTRACT(DAY FROM updated_date) = :day" +
-            " order by updated_date desc",
-            countQuery = "SELECT COUNT(*) FROM transactions" +
-                    " WHERE recipient_target_account = :noAccount" +
-                    " AND EXTRACT(MONTH FROM updated_date) = :month" +
-                    " AND EXTRACT(DAY FROM updated_date) = :day" +
-                    " order by updated_date desc",
-            nativeQuery = true)
-    Page<Transaction> findAllAsRecipientAccount(@Param("noAccount") String noAccount,
-                                                @Param("month") int month,
-                                                @Param("day") int day,
-                                                Pageable pageable);
 }
