@@ -86,7 +86,6 @@ public class MutationServiceImpl implements MutationService {
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
-
         List<MutationResponse> mutationResponseList = new ArrayList<>();
         transactionRepository.findAll(spec, pageable).forEach(transaction -> {
             mutationResponseList.add(mutationMapper.toMutationResponse(transaction, account.getNo()));

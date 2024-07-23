@@ -16,6 +16,8 @@ public class MutationMapper {
                 .recipientTargetAccount(transaction.getRecipientTargetAccount().getNo())
                 .transactionStatus(transaction.getStatus())
                 .mutationType(noAccount.equals(transaction.getAccount().getNo()) ? MutationType.PENGELUARAN : MutationType.PEMASUKAN)
+                .type(noAccount.equals(transaction.getAccount().getNo()) ? transaction.getRecipientTargetAccount().getBank().getBankName() : transaction.getAccount().getBank().getBankName())
+                .recipientName(noAccount.equals(transaction.getAccount().getNo()) ? transaction.getRecipientTargetAccount().getUser().getFullname() : transaction.getAccount().getUser().getFullname())
                 .build();
     }
 }

@@ -24,6 +24,7 @@ import java.security.Principal;
 
 @Service
 @Slf4j
+@Transactional
 public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
@@ -72,6 +73,11 @@ public class TransactionServiceImpl implements TransactionService {
         validationService.validate(request);
         userRepository.findFirstByUsernameAndPin(principal.getName(), request.getPin()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pin not valid, please try again!"));
         Transaction transaction = transactionRepository.findFirstByIdAndTransactionType(request.getTransactionId(), request.getTransactionType()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found!"));
+
+        if (transaction.getStatus().equals(TransactionStatus.SUCCESS)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction already validated!");
+        }
+
         Account sourceAccount = accountRepository.findFirstByNo(transaction.getAccount().getNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
         Account accountRecipient = accountRepository.findFirstByNo(transaction.getRecipientTargetAccount().getNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account recipient not found!"));
 
@@ -80,6 +86,8 @@ public class TransactionServiceImpl implements TransactionService {
         accountRepository.save(sourceAccount);
         accountRepository.save(accountRecipient);
 
+        transaction.setAccount(sourceAccount);
+        transaction.setRecipientTargetAccount(accountRecipient);
         transaction.setStatus(TransactionStatus.SUCCESS);
 
         transactionRepository.save(transaction);
