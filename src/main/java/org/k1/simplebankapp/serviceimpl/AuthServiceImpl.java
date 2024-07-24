@@ -69,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
             if (newFailAttempts >= 3) {
                 // Lock the account if failed attempts >= 3
                 checkUser.setAccountNonLocked(false);
+                userRepository.save(checkUser);
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is locked, please change password!");
             }
 
