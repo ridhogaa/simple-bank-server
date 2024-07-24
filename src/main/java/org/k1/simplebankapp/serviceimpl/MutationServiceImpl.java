@@ -1,6 +1,7 @@
 package org.k1.simplebankapp.serviceimpl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.k1.simplebankapp.config.Config;
 import org.k1.simplebankapp.dto.MutationResponse;
 import org.k1.simplebankapp.dto.RequestNoAccount;
 import org.k1.simplebankapp.entity.Account;
@@ -102,8 +103,8 @@ public class MutationServiceImpl implements MutationService {
         }
         accountRepository.findFirstByNoAndUser(noAccount, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
         HashMap<String, Double> map = new HashMap<>();
-        map.put("spending", transactionRepository.findSpending(noAccount).orElse(0.0));
-        map.put("income", transactionRepository.findIncome(noAccount).orElse(0.0));
+        map.put("spending", transactionRepository.findSpending(noAccount, Config.currentMonth).orElse(0.0));
+        map.put("income", transactionRepository.findIncome(noAccount, Config.currentMonth).orElse(0.0));
         return map;
     }
 

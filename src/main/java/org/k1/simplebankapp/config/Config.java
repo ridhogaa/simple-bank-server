@@ -56,4 +56,6 @@ public class Config {
     public static Date dateNow = new Date();
 
     public static Date dateOneMonthLater = new Date(dateNow.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    public static Integer currentMonth = LocalDate.now().getMonthValue();
 }
