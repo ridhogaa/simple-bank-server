@@ -20,7 +20,6 @@ public interface MutationService {
 
     Map<String, Double> getSpendingAndIncome(
             Principal principal,
-            MutationType type,
             String noAccount
     );
 }
