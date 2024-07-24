@@ -22,12 +22,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
             "WHERE t.status = 'SUCCESS'" +
             "AND t.account_id = :accountId " +
             "AND EXTRACT(MONTH FROM updated_date) = 7 ", nativeQuery = true)
-    Double findSpending(@Param("accountId") String accountId);
+    Optional<Double> findSpending(@Param("accountId") String accountId);
 
     @Query(value = "SELECT SUM(t.amount) " +
             "FROM transactions t " +
             "WHERE t.status = 'SUCCESS'" +
             "AND t.recipient_target_account = :accountId " +
             "AND EXTRACT(MONTH FROM updated_date) = 7 ", nativeQuery = true)
-    Double findIncome(@Param("accountId") String accountId);
+    Optional<Double> findIncome(@Param("accountId") String accountId);
 }
