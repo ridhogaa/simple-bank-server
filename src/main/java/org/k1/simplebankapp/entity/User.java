@@ -89,6 +89,10 @@ public class User extends BaseDate implements UserDetails {
     @Column(name = "login_attempts", nullable = false)
     private Integer loginAttempts = 0;
 
+    @JsonIgnore
+    @Column(name = "pin_attempts", nullable = false)
+    private Integer pinAttempts = 0;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles;

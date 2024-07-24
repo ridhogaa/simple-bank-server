@@ -181,6 +181,7 @@ public class DatabaseSeeder implements ApplicationRunner {
                 oldUser.setEmail(username + "@mail.com");
                 oldUser.setPhoneNumber("08123456789" + counter);
                 oldUser.setLoginAttempts(0);
+                oldUser.setPinAttempts(0);
                 List<Role> r = roleRepository.findByNameIn(roleNames);
                 oldUser.setRoles(r);
             }

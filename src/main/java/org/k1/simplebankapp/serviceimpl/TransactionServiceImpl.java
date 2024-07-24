@@ -71,27 +71,62 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional
     public TransactionSuccessResponse validateTransaction(Principal principal, ValidateTransactionRequest request) {
         validationService.validate(request);
-        userRepository.findFirstByUsernameAndPin(principal.getName(), request.getPin()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pin not valid, please try again!"));
-        Transaction transaction = transactionRepository.findFirstByIdAndTransactionType(request.getTransactionId(), request.getTransactionType()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found!"));
 
+        User user = userRepository.findByUsername(principal.getName());
+
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
+        }
+
+        // Check if the user has exceeded the PIN attempts
+        if (user.getPinAttempts() >= 3) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is locked due to too many failed PIN attempts. Please try again later.");
+        }
+
+        // Validate the PIN
+        userRepository.findFirstByUsernameAndPin(principal.getName(), request.getPin())
+                .orElseThrow(() -> {
+                    // Increment the PIN attempts
+                    int newPinAttempts = user.getPinAttempts() + 1;
+                    user.setPinAttempts(newPinAttempts);
+                    userRepository.save(user);
+
+                    return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pin not valid, please try again!");
+                });
+
+        // Reset the PIN attempts on successful validation
+        user.setPinAttempts(0);
+        userRepository.save(user);
+
+        // Find the transaction
+        Transaction transaction = transactionRepository.findFirstByIdAndTransactionType(request.getTransactionId(), request.getTransactionType())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found!"));
+
+        // Check if the transaction is already validated
         if (transaction.getStatus().equals(TransactionStatus.SUCCESS)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction already validated!");
         }
 
-        Account sourceAccount = accountRepository.findFirstByNo(transaction.getAccount().getNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
-        Account accountRecipient = accountRepository.findFirstByNo(transaction.getRecipientTargetAccount().getNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account recipient not found!"));
+        // Find the source and recipient accounts
+        Account sourceAccount = accountRepository.findFirstByNo(transaction.getAccount().getNo())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
 
+        Account accountRecipient = accountRepository.findFirstByNo(transaction.getRecipientTargetAccount().getNo())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account recipient not found!"));
+
+        // Update account balances
         sourceAccount.setBalance(sourceAccount.getBalance() - transaction.getAmount());
         accountRecipient.setBalance(accountRecipient.getBalance() + transaction.getAmount());
         accountRepository.save(sourceAccount);
         accountRepository.save(accountRecipient);
 
+        // Update the transaction
         transaction.setAccount(sourceAccount);
         transaction.setRecipientTargetAccount(accountRecipient);
         transaction.setStatus(TransactionStatus.SUCCESS);
-
         transactionRepository.save(transaction);
 
         return transactionMapper.toTransactionSuccessResponse(transaction);
     }
+
 }
