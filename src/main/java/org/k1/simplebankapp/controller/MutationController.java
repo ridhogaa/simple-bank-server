@@ -39,10 +39,9 @@ public class MutationController {
     @GetMapping("{noAccount}/amounts")
     @Operation(summary = "Get amounts", description = "Endpoint to get income", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> getAmounts(
-            @RequestParam(required = true) MutationType type,
             @PathVariable String noAccount,
             Principal principal
     ) {
-        return ResponseEntity.ok(BaseResponse.success(mutationService.getSpendingAndIncome(principal, type, noAccount), "Success Get Mutation amounts"));
+        return ResponseEntity.ok(BaseResponse.success(mutationService.getSpendingAndIncome(principal, noAccount), "Success Get Mutation amounts"));
     }
 }
