@@ -8,6 +8,7 @@ import org.k1.simplebankapp.dto.RequestNoAccount;
 import org.k1.simplebankapp.entity.enums.MutationType;
 import org.k1.simplebankapp.service.MutationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +31,11 @@ public class MutationController {
             @RequestParam Integer month,
             @RequestParam(required = false) MutationType type,
             @PathVariable String noAccount,
-            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             Principal principal
     ) {
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(BaseResponse.success(mutationService.findAllByMonthAndMutationType(month, type, noAccount, pageable, principal), "Success Get All Mutations"));
     }
 
