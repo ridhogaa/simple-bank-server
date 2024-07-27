@@ -30,7 +30,7 @@ public class TransactionController {
         return ResponseEntity.ok(BaseResponse.success(transactionService.createTransaction(request, principal), "Create transaction success, please validate pin!"));
     }
 
-    @PostMapping("validate")
+    @PostMapping("bank/validate")
     @Operation(summary = "Validate transaction", description = "Endpoint to validate transaction", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> validateTransaction(@RequestBody ValidateTransactionRequest request, Principal principal) {
         return ResponseEntity.ok(BaseResponse.success(transactionService.validateTransaction(principal, request), "Create transaction success, please cek history mutation!"));

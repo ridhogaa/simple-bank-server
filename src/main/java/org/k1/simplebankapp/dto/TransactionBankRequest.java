@@ -11,10 +11,10 @@ import javax.validation.constraints.NotNull;
 public class TransactionBankRequest {
     @NotBlank
     private String accountNo;
-    @NotNull
-    private Long recipientTargetAccountType;
     @NotBlank
-    private String recipientTargetAccount;
+    private String recipientAccountNo;
+    @NotBlank
+    private String recipientBankName;
     @NotNull
     private Double amount;
     private String description;

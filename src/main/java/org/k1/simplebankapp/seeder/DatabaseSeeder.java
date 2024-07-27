@@ -227,7 +227,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             for (String bank : banks) {
                 Bank newBank = new Bank();
                 newBank.setBankName(bank);
-                newBank.setBiayaAdmin(bank.equals("BCA") ? 0 : 2500);
+                newBank.setAdminFee(bank.equals("BCA") ? 0 : 2500);
                 bankRepository.save(newBank);
             }
         }

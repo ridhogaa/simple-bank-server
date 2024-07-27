@@ -40,13 +40,7 @@ public class MutationServiceImpl implements MutationService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
     private MutationMapper mutationMapper;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private ValidationService validationService;
@@ -77,7 +71,7 @@ public class MutationServiceImpl implements MutationService {
                 if (type.equals(MutationType.PENGELUARAN)) {
                     predicates.add(criteriaBuilder.equal(root.get("account"), account));
                 } else if (type.equals(MutationType.PEMASUKAN)) {
-                    predicates.add(criteriaBuilder.equal(root.get("recipientTargetAccount"), account));
+                    predicates.add(criteriaBuilder.equal(root.get("recipientTargetAccount"), account.getNo()));
                 }
             }
 
@@ -99,6 +93,4 @@ public class MutationServiceImpl implements MutationService {
         map.put("income", transactionRepository.findIncome(noAccount, Config.currentMonth).orElse(0.0));
         return map;
     }
-
-
 }

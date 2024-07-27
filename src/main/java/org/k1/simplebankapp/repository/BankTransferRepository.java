@@ -13,5 +13,7 @@ import java.util.Optional;
 public interface BankTransferRepository extends JpaRepository<BankTransfer, Long>, JpaSpecificationExecutor<BankTransfer> {
     Optional<BankTransfer> findFirstByAccountAndRecipientAccountNo(Account account, String recipientAccountNo);
 
+    Boolean existsByAccountAndRecipientAccountNo(Account account, String recipientAccountNo);
+
     List<BankTransfer> findAllByAccount(Account account);
 }
