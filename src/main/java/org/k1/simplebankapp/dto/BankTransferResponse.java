@@ -5,17 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TransactionSuccessResponse {
-    private String fullName;
-    private Double amount;
-    private String transactionId;
+public class BankTransferResponse {
+    private String recipientName;
+    private String recipientAccountNo;
     private String recipientBankName;
-    private String recipientBankAccountNo;
-    private Date date;
 }

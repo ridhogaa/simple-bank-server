@@ -176,12 +176,10 @@ public class DatabaseSeeder implements ApplicationRunner {
                 oldUser.setUsername(username);
                 oldUser.setPassword(password);
                 oldUser.setFullname(fullName);
-                oldUser.setPin("123456");
                 oldUser.setBornDate(LocalDateTime.of(2002, Month.NOVEMBER, 22, 10, 30, 0));
                 oldUser.setEmail(username + "@mail.com");
                 oldUser.setPhoneNumber("08123456789" + counter);
                 oldUser.setLoginAttempts(0);
-                oldUser.setPinAttempts(0);
                 List<Role> r = roleRepository.findByNameIn(roleNames);
                 oldUser.setRoles(r);
             }
@@ -204,6 +202,8 @@ public class DatabaseSeeder implements ApplicationRunner {
             account.setExpDate(customDate);
             account.setBalance(1000000000L);
             account.setBank(bankRepository.findById(1L).get());
+            account.setPin("123456");
+            account.setPinAttempts(0);
             String[] str = userNames.split(":");
             String username = str[0];
             String[] roleNames = str[1].split("\\s");
@@ -227,7 +227,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             for (String bank : banks) {
                 Bank newBank = new Bank();
                 newBank.setBankName(bank);
-                newBank.setBiayaAdmin(bank.equals("BCA") ? 0 : 2500);
+                newBank.setAdminFee(bank.equals("BCA") ? 0 : 2500);
                 bankRepository.save(newBank);
             }
         }

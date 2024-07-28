@@ -6,6 +6,7 @@ import org.k1.simplebankapp.entity.User;
 import org.k1.simplebankapp.mapper.AuthMapper;
 import org.k1.simplebankapp.repository.UserRepository;
 import org.k1.simplebankapp.service.ProfileService;
+import org.k1.simplebankapp.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,17 +19,14 @@ import java.security.Principal;
 public class ProfileServiceImpl implements ProfileService {
 
     @Autowired
-    private UserRepository userRepository;
+    private AuthMapper authMapper;
 
     @Autowired
-    private AuthMapper authMapper;
+    private ValidationService validationService;
 
     @Override
     public ProfileResponse getProfile(Principal principal) {
-        User user = userRepository.findByUsername(principal.getName());
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
-        }
+        User user = validationService.validateCurrentUser(principal);
         return authMapper.toProfileResponse(user);
     }
 }

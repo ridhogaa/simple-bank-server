@@ -40,13 +40,7 @@ public class MutationServiceImpl implements MutationService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
     private MutationMapper mutationMapper;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private ValidationService validationService;
@@ -59,11 +53,7 @@ public class MutationServiceImpl implements MutationService {
             Pageable pageable,
             Principal principal
     ) {
-        User user = userRepository.findByUsername(principal.getName());
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
-        }
-        Account account = accountRepository.findFirstByNoAndUser(noAccount, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You dont have access to this account!"));
+        Account account = validationService.validateCurrentUserHaveThisAccount(principal, noAccount);
         Specification<Transaction> spec = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             LocalDate now = LocalDate.now();
@@ -81,7 +71,7 @@ public class MutationServiceImpl implements MutationService {
                 if (type.equals(MutationType.PENGELUARAN)) {
                     predicates.add(criteriaBuilder.equal(root.get("account"), account));
                 } else if (type.equals(MutationType.PEMASUKAN)) {
-                    predicates.add(criteriaBuilder.equal(root.get("recipientTargetAccount"), account));
+                    predicates.add(criteriaBuilder.equal(root.get("recipientTargetAccount"), account.getNo()));
                 }
             }
 
@@ -97,16 +87,10 @@ public class MutationServiceImpl implements MutationService {
 
     @Override
     public Map<String, Double> getSpendingAndIncome(Principal principal, String noAccount) {
-        User user = userRepository.findByUsername(principal.getName());
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
-        }
-        accountRepository.findFirstByNoAndUser(noAccount, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
+        validationService.validateCurrentUserHaveThisAccount(principal, noAccount);
         HashMap<String, Double> map = new HashMap<>();
         map.put("spending", transactionRepository.findSpending(noAccount, Config.currentMonth).orElse(0.0));
         map.put("income", transactionRepository.findIncome(noAccount, Config.currentMonth).orElse(0.0));
         return map;
     }
-
-
 }

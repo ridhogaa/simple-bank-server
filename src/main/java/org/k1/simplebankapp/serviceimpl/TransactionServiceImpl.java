@@ -7,7 +7,6 @@ import org.k1.simplebankapp.dto.TransactionPendingResponse;
 import org.k1.simplebankapp.dto.TransactionSuccessResponse;
 import org.k1.simplebankapp.dto.ValidateTransactionRequest;
 import org.k1.simplebankapp.entity.*;
-import org.k1.simplebankapp.entity.enums.MutationType;
 import org.k1.simplebankapp.entity.enums.TransactionStatus;
 import org.k1.simplebankapp.entity.enums.TransactionType;
 import org.k1.simplebankapp.mapper.TransactionMapper;
@@ -34,37 +33,36 @@ public class TransactionServiceImpl implements TransactionService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private TransactionMapper transactionMapper;
 
     @Autowired
     private ValidationService validationService;
 
+    @Autowired
+    private BankTransferRepository bankTransferRepository;
+
     @Override
     @Transactional
     public TransactionPendingResponse createTransaction(TransactionBankRequest request, Principal principal) {
         validationService.validate(request);
-        User user = userRepository.findByUsername(principal.getName());
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
-        }
-        Account sourceAccount = accountRepository.findFirstByNoAndUser(request.getAccountNo(), user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
-        Account accountRecipient = accountRepository.findFirstByNoAndBankId(request.getRecipientTargetAccount(), request.getRecipientTargetAccountType()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account recipient not found!"));
+        Account sourceAccount = validationService.validateCurrentUserHaveThisAccount(principal, request.getAccountNo());
+        BankTransfer accountRecipient = bankTransferRepository.findFirstByAccountAndRecipientAccountNo(sourceAccount, request.getRecipientAccountNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Recipient account not found!"));
         if (sourceAccount.getBalance() < request.getAmount()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance!");
         }
         Transaction transaction = new Transaction();
-        transaction.setId(Config.generateTransactionId() + transactionRepository.count() + 1);
+        transaction.setId(Config.generateTransactionId());
         transaction.setAccount(sourceAccount);
         transaction.setTransactionType(TransactionType.TRANSFER);
-        transaction.setRecipientTargetAccount(accountRecipient);
+        transaction.setRecipientTargetAccount(accountRecipient.getRecipientAccountNo());
+        transaction.setRecipientTargetName(accountRecipient.getRecipientName());
+        transaction.setRecipientTargetType(accountRecipient.getBank().getBankName());
         transaction.setAmount(request.getAmount());
         transaction.setDescription(request.getDescription());
         transaction.setStatus(TransactionStatus.PENDING);
+        transaction.setNoRef(Config.randomString(12, true));
         transactionRepository.save(transaction);
-        return transactionMapper.toTransactionResponse(transaction);
+        return transactionMapper.toTransactionResponse(transaction, accountRecipient);
     }
 
     @Override
@@ -72,61 +70,46 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionSuccessResponse validateTransaction(Principal principal, ValidateTransactionRequest request) {
         validationService.validate(request);
 
-        User user = userRepository.findByUsername(principal.getName());
-
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
-        }
-
-        // Check if the user has exceeded the PIN attempts
-        if (user.getPinAttempts() >= 3) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is locked due to too many failed PIN attempts. Please try again later.");
-        }
-
-        // Validate the PIN
-        userRepository.findFirstByUsernameAndPin(principal.getName(), request.getPin())
-                .orElseThrow(() -> {
-                    // Increment the PIN attempts
-                    int newPinAttempts = user.getPinAttempts() + 1;
-                    user.setPinAttempts(newPinAttempts);
-                    userRepository.save(user);
-
-                    return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pin not valid, please try again!");
-                });
-
-        // Reset the PIN attempts on successful validation
-        user.setPinAttempts(0);
-        userRepository.save(user);
-
-        // Find the transaction
         Transaction transaction = transactionRepository.findFirstByIdAndTransactionType(request.getTransactionId(), request.getTransactionType())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found!"));
-
-        // Check if the transaction is already validated
-        if (transaction.getStatus().equals(TransactionStatus.SUCCESS)) {
+        if (transaction.getStatus() == TransactionStatus.SUCCESS) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction already validated!");
         }
 
-        // Find the source and recipient accounts
-        Account sourceAccount = accountRepository.findFirstByNo(transaction.getAccount().getNo())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
+        Account sourceAccount = validationService.validateCurrentUserHaveThisAccount(principal, transaction.getAccount().getNo());
 
-        Account accountRecipient = accountRepository.findFirstByNo(transaction.getRecipientTargetAccount().getNo())
+        if (!sourceAccount.getPin().equals(request.getPin())) {
+            sourceAccount.setPinAttempts(sourceAccount.getPinAttempts() + 1);
+
+            if (sourceAccount.getPinAttempts() >= 3) {
+                accountRepository.save(sourceAccount);
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is locked, please change pin!");
+            }
+
+            accountRepository.save(sourceAccount);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pin not valid, please try again!");
+        }
+
+        sourceAccount.setPinAttempts(0);
+
+        BankTransfer accountRecipientBankTransfer = bankTransferRepository.findFirstByAccountAndRecipientAccountNo(sourceAccount, transaction.getRecipientTargetAccount())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account recipient not found!"));
+        Account accountRecipient = accountRepository.findFirstByNo(accountRecipientBankTransfer.getRecipientAccountNo())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account recipient not found!"));
 
-        // Update account balances
         sourceAccount.setBalance(sourceAccount.getBalance() - transaction.getAmount());
         accountRecipient.setBalance(accountRecipient.getBalance() + transaction.getAmount());
+
         accountRepository.save(sourceAccount);
         accountRepository.save(accountRecipient);
 
-        // Update the transaction
         transaction.setAccount(sourceAccount);
-        transaction.setRecipientTargetAccount(accountRecipient);
+        transaction.setRecipientTargetAccount(accountRecipient.getNo());
         transaction.setStatus(TransactionStatus.SUCCESS);
         transactionRepository.save(transaction);
 
-        return transactionMapper.toTransactionSuccessResponse(transaction);
+        return transactionMapper.toTransactionSuccessResponse(transaction, accountRecipientBankTransfer);
     }
+
 
 }

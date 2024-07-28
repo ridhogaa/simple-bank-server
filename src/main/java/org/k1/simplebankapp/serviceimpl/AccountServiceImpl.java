@@ -7,6 +7,7 @@ import org.k1.simplebankapp.mapper.AccountMapper;
 import org.k1.simplebankapp.repository.AccountRepository;
 import org.k1.simplebankapp.repository.UserRepository;
 import org.k1.simplebankapp.service.AccountService;
+import org.k1.simplebankapp.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,17 +25,14 @@ public class AccountServiceImpl implements AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountMapper accountMapper;
 
     @Autowired
-    private AccountMapper accountMapper;
+    private ValidationService validationService;
 
     @Override
     public List<AccountResponse> findAllByUser(Principal principal) {
-        User user = userRepository.findByUsername(principal.getName());
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not valid, please login again!");
-        }
+        User user = validationService.validateCurrentUser(principal);
         List<AccountResponse> accountResponseList = new ArrayList<>();
         accountRepository.findAllByUser(user).forEach(account -> {
             accountResponseList.add(accountMapper.toAccountResponse(account));
