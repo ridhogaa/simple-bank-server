@@ -11,7 +11,7 @@ public class BankTransferRequest {
     private String accountNo;
 
     @NotBlank
-    private String bankName;
+    private String recipientBankName;
 
     @NotBlank
     private String recipientAccountNo;
