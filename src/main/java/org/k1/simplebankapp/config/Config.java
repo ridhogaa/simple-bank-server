@@ -59,7 +59,7 @@ public class Config {
 
     public static Integer currentMonth = LocalDate.now().getMonthValue();
 
-    public Boolean isBankBCA(String bankName) {
+    public static Boolean isBankBCA(String bankName) {
         return bankName.equals("BCA");
     }
 }

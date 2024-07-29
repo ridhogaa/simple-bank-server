@@ -48,6 +48,9 @@ public class Transaction extends BaseDate {
 
     @Column(name = "no_ref", nullable = false)
     private String noRef;
+
+    @Column(name = "fee_admin", nullable = true)
+    private Double feeAdmin;
 }
 
 
