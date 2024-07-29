@@ -23,7 +23,6 @@ import java.security.Principal;
 
 @Service
 @Slf4j
-@Transactional
 public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
@@ -66,7 +65,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public TransactionSuccessResponse validateTransaction(Principal principal, ValidateTransactionRequest request) {
         validationService.validate(request);
 
@@ -77,6 +76,10 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         Account sourceAccount = validationService.validateCurrentUserHaveThisAccount(principal, transaction.getAccount().getNo());
+
+        if (sourceAccount.getPin().equals(request.getPin()) && sourceAccount.getPinAttempts() >= 3) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is locked, please change pin!");
+        }
 
         if (!sourceAccount.getPin().equals(request.getPin())) {
             sourceAccount.setPinAttempts(sourceAccount.getPinAttempts() + 1);
@@ -90,6 +93,13 @@ public class TransactionServiceImpl implements TransactionService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pin not valid, please try again!");
         }
 
+        BankTransfer accountRecipientBankTransfer = successTransaction(sourceAccount, transaction);
+
+        return transactionMapper.toTransactionSuccessResponse(transaction, accountRecipientBankTransfer);
+    }
+
+    @Transactional
+    public BankTransfer successTransaction(Account sourceAccount, Transaction transaction) {
         sourceAccount.setPinAttempts(0);
 
         BankTransfer accountRecipientBankTransfer = bankTransferRepository.findFirstByAccountAndRecipientAccountNo(sourceAccount, transaction.getRecipientTargetAccount())
@@ -107,8 +117,7 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setRecipientTargetAccount(accountRecipient.getNo());
         transaction.setStatus(TransactionStatus.SUCCESS);
         transactionRepository.save(transaction);
-
-        return transactionMapper.toTransactionSuccessResponse(transaction, accountRecipientBankTransfer);
+        return accountRecipientBankTransfer;
     }
 
 
