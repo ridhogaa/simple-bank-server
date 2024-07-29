@@ -53,7 +53,7 @@ public class BankTransferServiceImpl implements BankTransferService {
         if (bankTransferRepository.existsByAccountAndRecipientAccountNo(sourceAccount, request.getRecipientAccountNo())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bank transfer already exists!");
         }
-        if (request.getBankName().equalsIgnoreCase("BCA")) {
+        if (request.getRecipientBankName().equalsIgnoreCase("BCA")) {
             Account accountRecipient = accountRepository.findFirstByNo(request.getRecipientAccountNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account recipient not found!"));
             BankTransfer bankTransfer = new BankTransfer();
             bankTransfer.setBank(accountRecipient.getBank());
