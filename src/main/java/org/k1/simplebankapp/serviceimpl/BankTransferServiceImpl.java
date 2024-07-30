@@ -19,10 +19,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
 public class BankTransferServiceImpl implements BankTransferService {
+
+    @Autowired
+    private BankTransferRepository bankTransferRepository;
 
     @Autowired
     private ValidationService validationService;
@@ -39,6 +44,10 @@ public class BankTransferServiceImpl implements BankTransferService {
     @Override
     public BankTransferResponse createTransaction(BankTransferRequest request, Principal principal) {
         validationService.validate(request);
+        if (request.getAccountNo().equalsIgnoreCase(request.getRecipientAccountNo())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account number and recipient account number cannot be same!");
+        }
+        log.info("request: {}", request);
         Account sourceAccount = validationService.validateCurrentUserHaveThisAccount(principal, request.getAccountNo());
         Account accountRecipient = accountRepository.findFirstByNo(request.getRecipientAccountNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Recipient account not found!"));
         if (sourceAccount.getBalance() < request.getAmount()) {
