@@ -27,9 +27,6 @@ import java.util.List;
 public class BankTransferServiceImpl implements BankTransferService {
 
     @Autowired
-    private BankTransferRepository bankTransferRepository;
-
-    @Autowired
     private ValidationService validationService;
 
     @Autowired
