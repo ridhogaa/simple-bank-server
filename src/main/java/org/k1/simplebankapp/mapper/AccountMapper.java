@@ -14,6 +14,7 @@ public class AccountMapper {
                 .expDate(account.getExpDate())
                 .balance(account.getBalance())
                 .fullName(account.getUser().getFullname())
+                .pin(account.getPin())
                 .build();
     }
 }

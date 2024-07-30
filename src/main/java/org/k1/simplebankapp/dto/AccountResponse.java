@@ -16,4 +16,5 @@ public class AccountResponse {
     private String cardNumber;
     private Date expDate;
     private Double balance;
+    private String pin;
 }

@@ -11,11 +11,16 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TransactionSuccessResponse {
-    private String fullName;
+public class BankTransferResponse {
+    private String sourceFullName;
+    private String sourceAccountNo;
+    private String sourceBankName;
     private Double amount;
     private String transactionId;
+    private String transactionType;
     private String recipientBankName;
     private String recipientBankAccountNo;
+    private String recipientFullName;
+    private String noRef;
     private Date date;
 }
