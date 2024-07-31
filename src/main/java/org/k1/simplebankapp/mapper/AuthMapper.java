@@ -27,6 +27,7 @@ public class AuthMapper {
                 .username(user.getUsername())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
+                .bornDate(user.getBornDate().toString())
                 .build();
     }
 }

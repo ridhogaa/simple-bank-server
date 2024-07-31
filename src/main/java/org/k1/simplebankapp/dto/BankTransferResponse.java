@@ -22,5 +22,5 @@ public class BankTransferResponse {
     private String recipientBankAccountNo;
     private String recipientFullName;
     private String noRef;
-    private Date date;
+    private String date;
 }

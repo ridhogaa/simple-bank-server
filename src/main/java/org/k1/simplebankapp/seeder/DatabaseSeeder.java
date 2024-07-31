@@ -191,33 +191,35 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Transactional
     public void insertAccount(String password) {
-        int counter = 0;
-        LocalDate localDate = LocalDate.of(2025, 11, 22);
-        Date customDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        for (String userNames : users) {
-            Account account = new Account();
-            account.setNo("373765759821356" + counter);
-            account.setAccountType(AccountType.GOLD);
-            account.setCardNumber("373765759821351" + counter);
-            account.setExpDate(customDate);
-            account.setBalance(1000000000L);
-            account.setBank(bankRepository.findById(1L).get());
-            account.setPin("123456");
-            account.setPinAttempts(0);
-            String[] str = userNames.split(":");
-            String username = str[0];
-            String[] roleNames = str[1].split("\\s");
-            User user = userRepository.findByUsername(username);
-            if (null == user) {
-                user = new User();
-                user.setUsername(username);
-                user.setPassword(password);
-                List<Role> r = roleRepository.findByNameIn(roleNames);
-                user.setRoles(r);
+        if (accountRepository.count() == 0) {
+            int counter = 0;
+            LocalDate localDate = LocalDate.of(2025, 11, 22);
+            Date customDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            for (String userNames : users) {
+                Account account = new Account();
+                account.setNo("373765759821356" + counter);
+                account.setAccountType(AccountType.GOLD);
+                account.setCardNumber("373765759821351" + counter);
+                account.setExpDate(customDate);
+                account.setBalance(1000000000L);
+                account.setBank(bankRepository.findById(1L).get());
+                account.setPin("123456");
+                account.setPinAttempts(0);
+                String[] str = userNames.split(":");
+                String username = str[0];
+                String[] roleNames = str[1].split("\\s");
+                User user = userRepository.findByUsername(username);
+                if (null == user) {
+                    user = new User();
+                    user.setUsername(username);
+                    user.setPassword(password);
+                    List<Role> r = roleRepository.findByNameIn(roleNames);
+                    user.setRoles(r);
+                }
+                account.setUser(user);
+                accountRepository.save(account);
+                counter++;
             }
-            account.setUser(user);
-            accountRepository.save(account);
-            counter++;
         }
     }
 

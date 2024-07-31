@@ -13,4 +13,5 @@ public class ProfileResponse {
     private String username;
     private String phoneNumber;
     private String email;
+    private String bornDate;
 }

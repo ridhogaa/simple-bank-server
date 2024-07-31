@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.UUID;
 
 @Component
@@ -61,5 +62,12 @@ public class Config {
 
     public static Boolean isBankBCA(String bankName) {
         return bankName.equals("BCA");
+    }
+
+    public static String convertToDateWIB(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Jakarta"));
+
+        return sdf.format(date);
     }
 }
