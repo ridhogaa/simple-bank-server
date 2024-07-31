@@ -1,8 +1,11 @@
 package org.k1.simplebankapp.mapper;
 
+import org.k1.simplebankapp.config.Config;
 import org.k1.simplebankapp.dto.BankTransferResponse;
 import org.k1.simplebankapp.entity.Transaction;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 @Component
 public class BankTransferMapper {
@@ -13,7 +16,7 @@ public class BankTransferMapper {
                 .sourceBankName(transaction.getAccount().getBank().getBankName())
                 .sourceAccountNo(transaction.getAccount().getNo())
                 .amount(transaction.getAmount())
-                .date(transaction.getUpdatedDate())
+                .date(Config.convertToDateWIB(new Date()))
                 .recipientBankAccountNo(transaction.getRecipientTargetAccount())
                 .recipientBankName(transaction.getRecipientTargetType())
                 .recipientFullName(transaction.getRecipientTargetName())
