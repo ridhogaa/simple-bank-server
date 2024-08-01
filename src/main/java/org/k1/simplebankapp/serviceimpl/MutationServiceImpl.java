@@ -15,6 +15,8 @@ import org.k1.simplebankapp.repository.UserRepository;
 import org.k1.simplebankapp.service.MutationService;
 import org.k1.simplebankapp.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,7 +49,7 @@ public class MutationServiceImpl implements MutationService {
     private ValidationService validationService;
 
     @Override
-    public List<MutationResponse> findAllByMonthAndMutationType(
+    public Page<MutationResponse> findAllByMonthAndMutationType(
             Integer month,
             MutationType type,
             String noAccount,
@@ -77,12 +80,12 @@ public class MutationServiceImpl implements MutationService {
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
-        List<MutationResponse> mutationResponseList = new ArrayList<>();
-        transactionRepository.findAll(spec, pageable).forEach(transaction -> {
-            mutationResponseList.add(mutationMapper.toMutationResponse(transaction, account.getNo()));
-            log.info("DATA --> {}", mutationResponseList);
-        });
-        return mutationResponseList;
+        Page<Transaction> transactions = transactionRepository.findAll(spec, pageable);
+        List<MutationResponse> mutationResponseList = transactions.getContent().stream()
+                .map(transaction -> mutationMapper.toMutationResponse(transaction, noAccount))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(mutationResponseList, pageable, transactions.getTotalElements());
     }
 
     @Override
