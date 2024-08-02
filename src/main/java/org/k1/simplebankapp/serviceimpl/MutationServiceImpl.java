@@ -57,6 +57,9 @@ public class MutationServiceImpl implements MutationService {
             Principal principal
     ) {
         Account account = validationService.validateCurrentUserHaveThisAccount(principal, noAccount);
+        if (!Config.isValidMonth(month)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Month must between 1 to 12");
+        }
         Specification<Transaction> spec = ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             LocalDate now = LocalDate.now();

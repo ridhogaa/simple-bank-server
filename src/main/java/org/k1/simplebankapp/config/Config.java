@@ -64,10 +64,14 @@ public class Config {
         return bankName.equals("BCA");
     }
 
-    public static String convertToDateWIB(Date date){
+    public static String convertToDateWIB(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Jakarta"));
 
         return sdf.format(date);
+    }
+
+    public static boolean isValidMonth(Integer month) {
+        return month >= 1 && month <= 12;
     }
 }
