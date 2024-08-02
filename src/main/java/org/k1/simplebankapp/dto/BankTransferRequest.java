@@ -8,14 +8,16 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-public class TransactionBankRequest {
+public class BankTransferRequest {
     @NotBlank
     private String accountNo;
-    @NotNull
-    private Long recipientTargetAccountType;
     @NotBlank
-    private String recipientTargetAccount;
+    private String recipientAccountNo;
+    @NotBlank
+    private String recipientBankName;
     @NotNull
     private Double amount;
+    @NotBlank
+    private String pin;
     private String description;
 }

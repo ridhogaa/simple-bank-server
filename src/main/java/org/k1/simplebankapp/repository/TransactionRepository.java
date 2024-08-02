@@ -21,13 +21,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
             "FROM transactions t " +
             "WHERE t.status = 'SUCCESS'" +
             "AND t.account_id = :accountId " +
-            "AND EXTRACT(MONTH FROM updated_date) = 7 ", nativeQuery = true)
-    Double findSpending(@Param("accountId") String accountId);
+            "AND EXTRACT(MONTH FROM updated_date) = :month", nativeQuery = true)
+    Optional<Double> findSpending(@Param("accountId") String accountId, @Param("month") Integer month);
 
     @Query(value = "SELECT SUM(t.amount) " +
             "FROM transactions t " +
             "WHERE t.status = 'SUCCESS'" +
             "AND t.recipient_target_account = :accountId " +
-            "AND EXTRACT(MONTH FROM updated_date) = 7 ", nativeQuery = true)
-    Double findIncome(@Param("accountId") String accountId);
+            "AND EXTRACT(MONTH FROM updated_date) = :month", nativeQuery = true)
+    Optional<Double> findIncome(@Param("accountId") String accountId, @Param("month") Integer month);
 }

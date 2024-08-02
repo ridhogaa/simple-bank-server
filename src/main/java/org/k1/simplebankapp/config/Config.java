@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.UUID;
 
 @Component
@@ -56,4 +57,21 @@ public class Config {
     public static Date dateNow = new Date();
 
     public static Date dateOneMonthLater = new Date(dateNow.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    public static Integer currentMonth = LocalDate.now().getMonthValue();
+
+    public static Boolean isBankBCA(String bankName) {
+        return bankName.equals("BCA");
+    }
+
+    public static String convertToDateWIB(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Jakarta"));
+
+        return sdf.format(date);
+    }
+
+    public static boolean isValidMonth(Integer month) {
+        return month >= 1 && month <= 12;
+    }
 }

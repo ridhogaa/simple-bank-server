@@ -16,4 +16,5 @@ public class TransactionPendingResponse {
     private String fullNameRecipientAccount;
     private String noAccount;
     private String noAccountRecipient;
+    private Double adminFee;
 }

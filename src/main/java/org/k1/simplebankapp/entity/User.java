@@ -35,9 +35,6 @@ public class User extends BaseDate implements UserDetails {
     @Column(name = "fullname")
     private String fullname;
 
-    @Column(name = "pin", length = 6)
-    private String pin;
-
     @Column(name = "born_date")
     private LocalDateTime bornDate;
 

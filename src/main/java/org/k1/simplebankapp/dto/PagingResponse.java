@@ -9,7 +9,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TransactionSuccessResponse {
-    private String fullName;
-    private Double amount;
+public class PagingResponse<T> {
+
+    private Integer currentPage;
+
+    private Integer totalPage;
+
+    private Integer size;
+
+    private Integer totalItem;
+
+    private T pagingData;
 }

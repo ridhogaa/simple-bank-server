@@ -18,4 +18,6 @@ public class MutationResponse {
     private String recipientTargetAccount;
     private TransactionStatus transactionStatus;
     private MutationType mutationType;
+    private String recipientName;
+    private String type;
 }

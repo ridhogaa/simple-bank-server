@@ -22,6 +22,7 @@ public class Bank extends BaseDate {
     @Column(name = "bank_name", nullable = false)
     private String bankName;
 
-    private double biayaAdmin;
+    @Column(name = "admin_fee", nullable = false)
+    private double adminFee;
 
 }

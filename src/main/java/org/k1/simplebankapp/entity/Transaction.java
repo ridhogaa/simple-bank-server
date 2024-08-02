@@ -25,9 +25,14 @@ public class Transaction extends BaseDate {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "recipient_target_account", nullable = false)
-    private Account recipientTargetAccount;
+    @Column(name = "recipient_target_account", nullable = false)
+    private String recipientTargetAccount;
+
+    @Column(name = "recipient_target_name", nullable = false)
+    private String recipientTargetName;
+
+    @Column(name = "recipient_target_type", nullable = false)
+    private String recipientTargetType;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
@@ -40,6 +45,12 @@ public class Transaction extends BaseDate {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status;
+
+    @Column(name = "no_ref", nullable = false)
+    private String noRef;
+
+    @Column(name = "fee_admin", nullable = true)
+    private Double feeAdmin;
 }
 
 
