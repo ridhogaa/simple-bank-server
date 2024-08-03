@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
                 @Server(description = "dev env",
                         url = "http://localhost:8080/api"),
                 @Server(description = "stg env",
-                        url = "https://simplebank-stg.koyeb.app/api/"),
+                        url = "https://simple-bank-server-avi4q6gcnq-uc.a.run.app/api"),
         }
 
 )
