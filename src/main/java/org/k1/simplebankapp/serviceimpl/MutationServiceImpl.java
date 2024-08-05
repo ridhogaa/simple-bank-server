@@ -66,11 +66,11 @@ public class MutationServiceImpl implements MutationService {
             LocalDate lastYear = now.minusYears(1);
 
             if (month != null) {
-                Expression<Integer> monthExpression = criteriaBuilder.function("MONTH", Integer.class, root.get("updatedDate"));
+                Expression<Integer> monthExpression = criteriaBuilder.function("MONTH", Integer.class, root.get("created_date"));
                 predicates.add(criteriaBuilder.equal(monthExpression, month));
             }
 
-            Expression<Integer> yearExpression = criteriaBuilder.function("YEAR", Integer.class, root.get("updatedDate"));
+            Expression<Integer> yearExpression = criteriaBuilder.function("YEAR", Integer.class, root.get("created_date"));
             predicates.add(criteriaBuilder.between(yearExpression, lastYear.getYear(), now.getYear()));
 
             if (type != null) {
