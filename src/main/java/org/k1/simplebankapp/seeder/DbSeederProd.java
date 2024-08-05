@@ -1,5 +1,6 @@
 package org.k1.simplebankapp.seeder;
 
+import org.k1.simplebankapp.config.Config;
 import org.k1.simplebankapp.entity.*;
 import org.k1.simplebankapp.entity.enums.AccountType;
 import org.k1.simplebankapp.repository.*;
@@ -8,12 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -23,10 +23,10 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-@Service
-public class DatabaseSeeder implements ApplicationRunner {
+@Profile("prod")
+public class DbSeederProd implements ApplicationRunner {
 
-    private Logger logger = LoggerFactory.getLogger(DatabaseSeeder.class);
+    private final Logger logger = LoggerFactory.getLogger(DbSeederProd.class);
 
     @Autowired
     private PasswordEncoder encoder;
@@ -49,29 +49,35 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Autowired
     private BankRepository bankRepository;
 
-    private String defaultPassword = "password";
-
-    private String[] users = new String[]{
-            "admin@mail.com:ROLE_SUPERUSER ROLE_USER ROLE_ADMIN",
-            "userbank1:ROLE_USER",
-            "userbank2:ROLE_USER",
-            "userbank3:ROLE_USER",
-            "userbank4:ROLE_USER",
-            "userbank5:ROLE_USER",
-            "userbank6:ROLE_USER",
-            "userbank7:ROLE_USER",
-            "userbank8:ROLE_USER",
-            "qa.api:ROLE_USER",
-            "qa.mobile:ROLE_USER",
-            "qa.website:ROLE_USER",
+    private final String[] users = {
+            "admin@mail.com:ROLE_SUPERUSER ROLE_USER ROLE_ADMIN:ADMIN",
+            "diana:ROLE_USER:Septriediana Amalia",
+            "azizah:ROLE_USER:Noer Azizah Permata Sonda",
+            "nur:ROLE_USER:Muhammad Nur Setiawan",
+            "azis:ROLE_USER:Nur Azis Kurnia Rianto",
+            "azisz:ROLE_USER:Ahmad Miftahul Azisz",
+            "ana:ROLE_USER:Ana Bellatus Mustaqfiro",
+            "ridho:ROLE_USER:Ridho Gymnastiar Al Rasyid",
+            "aulia:ROLE_USER:Aulia Kuswina Gusta",
+            "diams:ROLE_USER:Dimas Aditya Purwadi Putra",
+            "yulinar:ROLE_USER:Yulinar",
+            "ahmad:ROLE_USER:Ahmad kevin",
+            "adnika:ROLE_USER:Andika Tirta",
+            "aji:ROLE_USER:Aji Nuansa",
+            "sahid:ROLE_USER:Sahid Jafar",
+            "fauzan:ROLE_USER:Fauzan Nursalma",
+            "jeremia:ROLE_USER:Jeremia Letare Pane",
+            "bagus:ROLE_USER:Bagus Angkasawan Sumantri Putra",
+            "andi:ROLE_USER:Andi Eka Nugraha",
+            "hasan:ROLE_USER:M. Hasan",
+            "yohanna:ROLE_USER:Yohanna Melani Sihotang",
+            "dandy:ROLE_USER:Dandy Dicky Triwibowo",
+            "qa.api:ROLE_USER:QA API TESTING PROD",
+            "qa.mobile:ROLE_USER:QA MOBILE TESTING PROD",
+            "qa.website:ROLE_USER:QA WEBSITE TESTING PROD"
     };
 
-    private String[] clients = new String[]{
-            "my-client-apps:ROLE_READ ROLE_WRITE", // mobile
-            "my-client-web:ROLE_READ ROLE_WRITE" // web
-    };
-
-    private String[] roles = new String[]{
+    private final String[] roles = {
             "ROLE_SUPERUSER:user_role:^/.*:GET|PUT|POST|PATCH|DELETE|OPTIONS",
             "ROLE_ADMIN:user_role:^/.*:GET|PUT|POST|PATCH|DELETE|OPTIONS",
             "ROLE_USER:user_role:^/.*:GET|PUT|POST|PATCH|DELETE|OPTIONS",
@@ -79,7 +85,12 @@ public class DatabaseSeeder implements ApplicationRunner {
             "ROLE_WRITE:oauth_role:^/.*:GET|PUT|POST|PATCH|DELETE|OPTIONS"
     };
 
-    private String[] banks = new String[]{
+    private final String[] clients = {
+            "my-client-apps:ROLE_READ ROLE_WRITE",
+            "my-client-web:ROLE_READ ROLE_WRITE"
+    };
+
+    private final String[] banks = {
             "BCA",
             "BRI",
             "Mandiri",
@@ -89,17 +100,25 @@ public class DatabaseSeeder implements ApplicationRunner {
             "BTPN"
     };
 
-
     @Override
     @Transactional
-    public void run(ApplicationArguments applicationArguments) {
-        String password = encoder.encode(defaultPassword);
+    public void run(ApplicationArguments args) {
+        logger.info("Starting database seeder for production...");
 
-        this.insertBanks();
-        this.insertRoles();
-        this.insertClients(password);
-        this.insertUser(password);
-        this.insertAccount(password);
+        if (isProductionSafeToSeed()) {
+            String defaultPassword = "$1mpl3b4nk@2024";
+            String password = encoder.encode(defaultPassword);
+
+            insertBanks();
+            insertRoles();
+            insertClients(password);
+            insertUsers(password);
+            insertAccounts();
+
+            logger.info("Database seeder for production completed successfully.");
+        } else {
+            logger.warn("Database seeding is not safe to run in production. Aborting.");
+        }
     }
 
     @Transactional
@@ -111,7 +130,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             String pattern = str[2];
             String[] methods = str[3].split("\\|");
             Role oldRole = roleRepository.findOneByName(name);
-            if (null == oldRole) {
+            if (oldRole == null) {
                 oldRole = new Role();
                 oldRole.setName(name);
                 oldRole.setType(type);
@@ -119,7 +138,7 @@ public class DatabaseSeeder implements ApplicationRunner {
                 for (String m : methods) {
                     String rolePathName = name.toLowerCase() + "_" + m.toLowerCase();
                     RolePath rolePath = rolePathRepository.findOneByName(rolePathName);
-                    if (null == rolePath) {
+                    if (rolePath == null) {
                         rolePath = new RolePath();
                         rolePath.setName(rolePathName);
                         rolePath.setMethod(m.toUpperCase());
@@ -129,9 +148,8 @@ public class DatabaseSeeder implements ApplicationRunner {
                         oldRole.getRolePaths().add(rolePath);
                     }
                 }
+                roleRepository.save(oldRole);
             }
-
-            roleRepository.save(oldRole);
         }
     }
 
@@ -142,83 +160,74 @@ public class DatabaseSeeder implements ApplicationRunner {
             String clientName = s[0];
             String[] clientRoles = s[1].split("\\s");
             Client oldClient = clientRepository.findOneByClientId(clientName);
-            if (null == oldClient) {
-                oldClient = new Client();
-                oldClient.setClientId(clientName);
-                oldClient.setAccessTokenValiditySeconds(28800);//1 jam 3600 :token valid : seharian kerja : normal 1 jam
-                oldClient.setRefreshTokenValiditySeconds(7257600);// refresh
-                oldClient.setGrantTypes("password refresh_token authorization_code");
-                oldClient.setClientSecret(password);
-                oldClient.setApproved(true);
-                oldClient.setRedirectUris("");
-                oldClient.setScopes("read write");
-                List<Role> rls = roleRepository.findByNameIn(clientRoles);
-
-                if (!rls.isEmpty()) {
-                    oldClient.getAuthorities().addAll(rls);
-                }
+            if (oldClient == null) {
+                oldClient = getClient(password, clientName, clientRoles, roleRepository);
+                clientRepository.save(oldClient);
             }
-            clientRepository.save(oldClient);
         }
     }
 
+    static Client getClient(String password, String clientName, String[] clientRoles, RoleRepository roleRepository) {
+        Client oldClient = new Client();
+        oldClient.setClientId(clientName);
+        oldClient.setAccessTokenValiditySeconds(28800); // 8 hours
+        oldClient.setRefreshTokenValiditySeconds(7257600); // 84 days
+        oldClient.setGrantTypes("password refresh_token authorization_code");
+        oldClient.setClientSecret(password);
+        oldClient.setApproved(true);
+        oldClient.setRedirectUris("");
+        oldClient.setScopes("read write");
+        List<Role> rls = roleRepository.findByNameIn(clientRoles);
+        if (!rls.isEmpty()) {
+            oldClient.getAuthorities().addAll(rls);
+        }
+        return oldClient;
+    }
+
     @Transactional
-    public void insertUser(String password) {
-        int counter = 0;
+    public void insertUsers(String password) {
         for (String userNames : users) {
             String[] str = userNames.split(":");
             String username = str[0];
             String[] roleNames = str[1].split("\\s");
-            String fullName = "User Bank";
+            String fullName = str[2];
             User oldUser = userRepository.findByUsername(username);
-            if (null == oldUser) {
+            if (oldUser == null) {
                 oldUser = new User();
                 oldUser.setUsername(username);
                 oldUser.setPassword(password);
                 oldUser.setFullname(fullName);
-                oldUser.setBornDate(LocalDateTime.of(2002, Month.NOVEMBER, 22, 10, 30, 0));
+                oldUser.setBornDate(LocalDateTime.of(2000, Month.NOVEMBER, 11, 1, 1, 0));
                 oldUser.setEmail(username + "@mail.com");
-                oldUser.setPhoneNumber("08123456789" + counter);
+                oldUser.setPhoneNumber("0812345678" + Config.randomString(2, true));
                 oldUser.setLoginAttempts(0);
                 List<Role> r = roleRepository.findByNameIn(roleNames);
                 oldUser.setRoles(r);
+                userRepository.save(oldUser);
             }
-
-            userRepository.save(oldUser);
-            counter++;
         }
     }
 
     @Transactional
-    public void insertAccount(String password) {
+    public void insertAccounts() {
         if (accountRepository.count() == 0) {
-            int counter = 0;
             LocalDate localDate = LocalDate.of(2025, 11, 22);
             Date customDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            for (String userNames : users) {
+            for (String username : users) {
                 Account account = new Account();
-                account.setNo("373765759821356" + counter);
+                account.setNo("317103001" + Config.randomString(8, true));
                 account.setAccountType(AccountType.GOLD);
-                account.setCardNumber("373765759821351" + counter);
+                account.setCardNumber("373101001" + Config.randomString(8, true));
                 account.setExpDate(customDate);
                 account.setBalance(1000000000L);
-                account.setBank(bankRepository.findById(1L).get());
+                account.setBank(bankRepository.findById(1L).orElse(null));
                 account.setPin("123456");
                 account.setPinAttempts(0);
-                String[] str = userNames.split(":");
-                String username = str[0];
-                String[] roleNames = str[1].split("\\s");
                 User user = userRepository.findByUsername(username);
-                if (null == user) {
-                    user = new User();
-                    user.setUsername(username);
-                    user.setPassword(password);
-                    List<Role> r = roleRepository.findByNameIn(roleNames);
-                    user.setRoles(r);
+                if (user != null) {
+                    account.setUser(user);
+                    accountRepository.save(account);
                 }
-                account.setUser(user);
-                accountRepository.save(account);
-                counter++;
             }
         }
     }
@@ -234,4 +243,12 @@ public class DatabaseSeeder implements ApplicationRunner {
             }
         }
     }
+
+    private boolean isProductionSafeToSeed() {
+        // Implement any necessary checks to ensure it is safe to seed the database in production.
+        // This might include checking for an environment variable, a specific command-line argument,
+        // or some other safety mechanism.
+        return true; // Change this to your actual safety check
+    }
 }
+
