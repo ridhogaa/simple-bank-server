@@ -44,6 +44,11 @@ public class BankTransferServiceImpl implements BankTransferService {
         if (request.getAccountNo().equalsIgnoreCase(request.getRecipientAccountNo())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account number and recipient account number cannot be same!");
         }
+
+        if (!Config.isBankBCA(request.getRecipientBankName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bank name not registered, please use BCA only");
+        }
+
         log.info("request: {}", request);
         Account sourceAccount = validationService.validateCurrentUserHaveThisAccount(principal, request.getAccountNo());
         Account accountRecipient = accountRepository.findFirstByNo(request.getRecipientAccountNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Recipient account not found!"));
