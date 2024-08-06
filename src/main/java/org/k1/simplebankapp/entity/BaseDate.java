@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -16,28 +18,27 @@ import java.util.Date;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(
-        value = {"created_at", "deleted_at"},
+        value = {"createdDate", "deletedDate"},
         allowGetters = true
 )
 public abstract class BaseDate implements Serializable {
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/javax")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_date", nullable = false, updatable = false)
-    @CreationTimestamp
-    @JsonIgnore
-    private Date created_date;
+    @CreatedDate
+    private Date createdDate;
 
     @JsonIgnore
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/javax")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deleted_date")
-    private Date deleted_date;
+    private Date deletedDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/javax")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_date", nullable = false)
-    @UpdateTimestamp
+    @LastModifiedDate
     @JsonIgnore
     private Date updatedDate;
 }

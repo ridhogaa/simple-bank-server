@@ -12,7 +12,7 @@ public class MutationMapper {
         return MutationResponse.builder()
                 .transactionType(transaction.getTransactionType().name())
                 .amount(transaction.getAmount())
-                .date(transaction.getUpdatedDate().toString())
+                .date(transaction.getCreatedDate().toString())
                 .recipientTargetAccount(transaction.getRecipientTargetAccount())
                 .transactionStatus(transaction.getStatus())
                 .mutationType(noAccount.equals(transaction.getAccount().getNo()) ? MutationType.PENGELUARAN : MutationType.PEMASUKAN)

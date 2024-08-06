@@ -11,6 +11,7 @@ import org.k1.simplebankapp.service.MutationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +37,7 @@ public class MutationController {
             @RequestParam(defaultValue = "10") int size,
             Principal principal
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<MutationResponse> mutationResponses = mutationService.findAllByMonthAndMutationType(month, type, noAccount, pageable, principal);
         PagingResponse<Object> pagingResponse = PagingResponse.builder()
                 .currentPage(mutationResponses.getNumber())
