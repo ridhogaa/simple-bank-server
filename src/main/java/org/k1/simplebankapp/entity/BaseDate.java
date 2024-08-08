@@ -26,7 +26,7 @@ public abstract class BaseDate implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_date", nullable = false, updatable = false)
-    @CreatedDate
+    @CreationTimestamp
     private Date createdDate;
 
     @JsonIgnore
@@ -38,7 +38,7 @@ public abstract class BaseDate implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_date", nullable = false)
-    @LastModifiedDate
+    @UpdateTimestamp
     @JsonIgnore
     private Date updatedDate;
 }
