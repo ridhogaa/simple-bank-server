@@ -1,9 +1,12 @@
 package org.k1.simplebankapp.mapper;
 
+import org.k1.simplebankapp.config.Config;
 import org.k1.simplebankapp.dto.MutationResponse;
 import org.k1.simplebankapp.entity.Transaction;
 import org.k1.simplebankapp.entity.enums.MutationType;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 @Component
 public class MutationMapper {
@@ -12,7 +15,7 @@ public class MutationMapper {
         return MutationResponse.builder()
                 .transactionType(transaction.getTransactionType().name())
                 .amount(transaction.getAmount())
-                .date(transaction.getCreatedDate().toString())
+                .date(Config.convertToDateWIB(transaction.getCreatedDate()))
                 .recipientTargetAccount(transaction.getRecipientTargetAccount())
                 .transactionStatus(transaction.getStatus())
                 .mutationType(noAccount.equals(transaction.getAccount().getNo()) ? MutationType.PENGELUARAN : MutationType.PEMASUKAN)

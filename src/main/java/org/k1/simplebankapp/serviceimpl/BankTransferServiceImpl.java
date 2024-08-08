@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.transaction.Transactional;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -105,6 +106,7 @@ public class BankTransferServiceImpl implements BankTransferService {
         transaction.setAccount(sourceAccount);
         transaction.setRecipientTargetAccount(accountRecipient.getNo());
         transaction.setStatus(TransactionStatus.SUCCESS);
+        transaction.setCreatedDate(new Date());
         transactionRepository.save(transaction);
     }
 }
