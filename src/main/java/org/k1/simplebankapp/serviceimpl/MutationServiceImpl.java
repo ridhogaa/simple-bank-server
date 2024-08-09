@@ -79,6 +79,13 @@ public class MutationServiceImpl implements MutationService {
                 } else if (type.equals(MutationType.PEMASUKAN)) {
                     predicates.add(criteriaBuilder.equal(root.get("recipientTargetAccount"), account.getNo()));
                 }
+            } else {
+                // If type is null, add both predicates
+                Predicate accountPredicate = criteriaBuilder.equal(root.get("account"), account);
+                Predicate recipientPredicate = criteriaBuilder.equal(root.get("recipientTargetAccount"), account.getNo());
+
+                // Combine with OR
+                predicates.add(criteriaBuilder.or(accountPredicate, recipientPredicate));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -86,6 +93,7 @@ public class MutationServiceImpl implements MutationService {
         Page<Transaction> transactions = transactionRepository.findAll(spec, pageable);
         List<MutationResponse> mutationResponseList = transactions.getContent().stream()
                 .map(transaction -> mutationMapper.toMutationResponse(transaction, noAccount))
+                .distinct()
                 .collect(Collectors.toList());
 
         return new PageImpl<>(mutationResponseList, pageable, transactions.getTotalElements());
