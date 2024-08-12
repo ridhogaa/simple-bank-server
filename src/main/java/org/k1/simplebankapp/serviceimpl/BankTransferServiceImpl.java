@@ -2,6 +2,7 @@ package org.k1.simplebankapp.serviceimpl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.k1.simplebankapp.config.Config;
+import org.k1.simplebankapp.config.EmailTemplate;
 import org.k1.simplebankapp.dto.*;
 import org.k1.simplebankapp.entity.Account;
 import org.k1.simplebankapp.entity.Transaction;
@@ -11,6 +12,7 @@ import org.k1.simplebankapp.mapper.BankTransferMapper;
 import org.k1.simplebankapp.repository.AccountRepository;
 import org.k1.simplebankapp.repository.TransactionRepository;
 import org.k1.simplebankapp.service.BankTransferService;
+import org.k1.simplebankapp.service.EmailService;
 import org.k1.simplebankapp.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,12 @@ public class BankTransferServiceImpl implements BankTransferService {
 
     @Autowired
     private BankTransferMapper bankTransferMapper;
+
+    @Autowired
+    private EmailTemplate emailTemplate;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public BankTransferResponse createTransaction(BankTransferRequest request, Principal principal) {
@@ -108,5 +116,7 @@ public class BankTransferServiceImpl implements BankTransferService {
         transaction.setStatus(TransactionStatus.SUCCESS);
         transaction.setCreatedDate(new Date());
         transactionRepository.save(transaction);
+
+        emailService.sendAsync(sourceAccount.getUser().getEmail(), "Bukti Transaksi Berhasil", emailTemplate.createTransactionSuccessEmail(transaction));
     }
 }
