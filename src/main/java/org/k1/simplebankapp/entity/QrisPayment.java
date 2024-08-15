@@ -7,6 +7,7 @@ import org.hibernate.annotations.Where;
 import org.k1.simplebankapp.entity.enums.TransactionStatus;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -15,29 +16,14 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Where(clause = "deleted_date is null")
-public class QrisPayment extends BaseDate{
+public class QrisPayment extends BaseDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long qrisPaymentId;
+    private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "transaction_id", nullable = false)
-    private Transaction transaction;
-
-    @Column(name = "recipient_account_no", nullable = false)
-    private Long recipientAccountNo;
-
-    @Column(nullable = false)
-    private Long amount;
-
-    @Column(name = "payment_date", nullable = false)
-    private Date paymentDate;
-
-    @Enumerated(EnumType.STRING)
-    private TransactionStatus status;
-
+    @Column(name = "qris_code", unique = true, nullable = false)
+    private String qrisCode;
+    private boolean isPaid;
+    private LocalDateTime expirationTime;
+    private String accountNo;
 }
