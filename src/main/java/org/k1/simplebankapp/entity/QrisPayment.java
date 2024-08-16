@@ -23,7 +23,10 @@ public class QrisPayment extends BaseDate {
 
     @Column(name = "qris_code", unique = true, nullable = false)
     private String qrisCode;
-    private boolean isPaid;
+    @Column(nullable = true)
+    private Boolean isPaid;
+    @Column(name = "expiration_time", nullable = true)
     private LocalDateTime expirationTime;
     private String accountNo;
+    private Double amount;
 }

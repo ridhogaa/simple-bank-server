@@ -1,5 +1,6 @@
 package org.k1.simplebankapp.seeder;
 
+import org.k1.simplebankapp.config.Config;
 import org.k1.simplebankapp.entity.*;
 import org.k1.simplebankapp.entity.enums.AccountType;
 import org.k1.simplebankapp.repository.*;
@@ -49,6 +50,12 @@ public class DbSeederDevStg implements ApplicationRunner {
 
     @Autowired
     private BankRepository bankRepository;
+
+    @Autowired
+    private MerchantRepository merchantRepository;
+
+    @Autowired
+    private QrisPaymentRepository qrisPaymentRepository;
 
     private String defaultPassword = "password";
 
@@ -101,6 +108,8 @@ public class DbSeederDevStg implements ApplicationRunner {
         this.insertClients(password);
         this.insertUser(password);
         this.insertAccount(password);
+        this.insertMerchants();
+        this.insertDummyMerchantsQRIS();
     }
 
     @Transactional
@@ -233,6 +242,30 @@ public class DbSeederDevStg implements ApplicationRunner {
                 newBank.setAdminFee(bank.equals("BCA") ? 0 : 2500);
                 bankRepository.save(newBank);
             }
+        }
+    }
+
+    @Transactional
+    public void insertMerchants() {
+        if (merchantRepository.count() == 0) {
+            for (int i = 0; i < 10; i++) {
+                Merchant newMerchant = new Merchant();
+                newMerchant.setName("Toko Madura " + (i + 1));
+                newMerchant.setBalance(0.0);
+                merchantRepository.save(newMerchant);
+            }
+        }
+    }
+
+    @Transactional
+    public void insertDummyMerchantsQRIS() {
+        if (qrisPaymentRepository.count() == 0) {
+            merchantRepository.findAll().forEach(merchant -> {
+                QrisPayment qrisPayment = new QrisPayment();
+                qrisPayment.setQrisCode("MRCHNT" + Config.randomString(10, true));
+                qrisPayment.setAccountNo(merchant.getId().toString());
+                qrisPaymentRepository.save(qrisPayment);
+            });
         }
     }
 }

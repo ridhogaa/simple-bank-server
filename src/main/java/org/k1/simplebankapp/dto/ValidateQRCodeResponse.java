@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 @Builder
-public class QRCodeResponse {
-    private String qrCode;
-    private String dueDate;
+public class ValidateQRCodeResponse {
+    private Boolean isPaid;
 }

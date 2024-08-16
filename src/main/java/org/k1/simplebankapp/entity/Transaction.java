@@ -40,6 +40,7 @@ public class Transaction extends BaseDate {
     @Column(nullable = false)
     private double amount;
 
+    @Column(nullable = true)
     private String description;
 
     @Enumerated(EnumType.STRING)

@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class QRCodeResponse {
+public class ScanQrisResponse {
+    private String senderName;
+    private Double amount;
     private String qrCode;
-    private String dueDate;
 }
