@@ -201,10 +201,16 @@ public class QrisServiceImpl implements QrisService {
         if (!qrCode.startsWith("ACC")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "QR code not valid!");
         }
+
         if (qrCode.startsWith("ACC") && qrisPayment.getExpirationTime().isBefore(LocalDateTime.now())) {
             qrisPaymentRepository.delete(qrisPayment);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "QR code expired!");
         }
+
+        if (!qrisPayment.getIsPaid()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "QR code must paid!");
+        }
+
         Account account = accountRepository.findFirstByNo(qrisPayment.getAccountNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
 
         return qrisMapper.toValidateQRCodeResponse(qrisPayment, account.getUser().getFullname());
