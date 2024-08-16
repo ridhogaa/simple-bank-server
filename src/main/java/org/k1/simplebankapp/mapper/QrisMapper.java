@@ -45,9 +45,11 @@ public class QrisMapper {
                 .build();
     }
 
-    public ValidateQRCodeResponse toValidateQRCodeResponse(QrisPayment qrisPayment) {
+    public ValidateQRCodeResponse toValidateQRCodeResponse(QrisPayment qrisPayment, String name) {
         return ValidateQRCodeResponse.builder()
                 .isPaid(qrisPayment.getIsPaid())
+                .amount(qrisPayment.getAmount())
+                .name(name)
                 .build();
     }
 }

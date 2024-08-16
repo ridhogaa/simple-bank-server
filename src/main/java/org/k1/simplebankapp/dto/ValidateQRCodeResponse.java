@@ -7,4 +7,6 @@ import lombok.Data;
 @Builder
 public class ValidateQRCodeResponse {
     private Boolean isPaid;
+    private String name;
+    private Double amount;
 }

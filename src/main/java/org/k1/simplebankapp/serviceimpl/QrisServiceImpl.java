@@ -205,7 +205,9 @@ public class QrisServiceImpl implements QrisService {
             qrisPaymentRepository.delete(qrisPayment);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "QR code expired!");
         }
-        return qrisMapper.toValidateQRCodeResponse(qrisPayment);
+        Account account = accountRepository.findFirstByNo(qrisPayment.getAccountNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found!"));
+
+        return qrisMapper.toValidateQRCodeResponse(qrisPayment, account.getUser().getFullname());
     }
 
     @Transactional
