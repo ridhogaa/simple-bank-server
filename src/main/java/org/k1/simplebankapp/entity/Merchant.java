@@ -6,19 +6,19 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
-@Table(name = "ewallet")
-@Data
 @AllArgsConstructor
+@Table(name = "merchant")
 @NoArgsConstructor
+@Data
 @Where(clause = "deleted_date is null")
-public class Ewallet extends BaseDate {
+public class Merchant extends BaseDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "ewallet_type", nullable = false)
-    private String ewalletType;
+    private String name;
+
+    private Double balance;
 }
