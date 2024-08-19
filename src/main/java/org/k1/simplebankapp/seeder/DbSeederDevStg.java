@@ -106,8 +106,8 @@ public class DbSeederDevStg implements ApplicationRunner {
         this.insertBanks();
         this.insertRoles();
         this.insertClients(password);
-        this.insertUser(password);
-        this.insertAccount(password);
+//        this.insertUser(password);
+//        this.insertAccount(password);
         this.insertMerchants();
         this.insertDummyMerchantsQRIS();
     }
