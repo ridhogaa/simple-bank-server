@@ -242,6 +242,6 @@ public class QrisServiceImpl implements QrisService {
         transaction.setCreatedDate(new Date());
         transactionRepository.save(transaction);
 
-        emailService.sendAsync(sourceAccount.getUser().getEmail(), "Bukti Transaksi Berhasil", emailTemplate.createTransactionSuccessEmail(transaction));
+        emailService.sendAsync(sourceAccount.getUser().getEmail(), "Bukti Transaksi Berhasil", emailTemplate.createTransactionSuccessEmailQRIS(transaction));
     }
 }

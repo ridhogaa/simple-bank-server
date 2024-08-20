@@ -7,6 +7,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Random;
@@ -73,5 +75,10 @@ public class Config {
 
     public static boolean isValidMonth(Integer month) {
         return month >= 1 && month <= 12;
+    }
+
+    public static String formatDate(String pattern, Date date) {
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern(pattern);
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(myFormatObj);
     }
 }
