@@ -10,10 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Random;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class Config {
@@ -78,7 +75,7 @@ public class Config {
     }
 
     public static String formatDate(String pattern, Date date) {
-        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern(pattern);
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(myFormatObj);
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern(pattern, new Locale("id", "ID"));
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(myFormatObj);
     }
 }

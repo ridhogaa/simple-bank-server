@@ -31,7 +31,7 @@ public class EmailTemplate {
                 "    <li><strong>Nomor Rekening Penerima:</strong> " + transaction.getRecipientTargetAccount() + "</li>" +
                 "    <li><strong>Nama Penerima:</strong> " + transaction.getRecipientTargetName() + "</li>" +
                 "    <li><strong>Jumlah Transfer:</strong> Rp " + transaction.getAmount() + "</li>" +
-                "    <li><strong>Tanggal & Waktu:</strong> " + Config.formatDate("E, MMMM dd yyyy", transaction.getCreatedDate()) + " & " + Config.formatDate("HH:mm:ss", transaction.getCreatedDate()) + " WIB</li>" +
+                "    <li><strong>Tanggal & Waktu:</strong> " + Config.formatDate("dd MMMM yyyy", transaction.getCreatedDate()) + " & " + Config.formatDate("HH:mm", transaction.getCreatedDate()) + " WIB</li>" +
                 "    <li><strong>Keterangan:</strong> " + (transaction.getDescription() != null ? transaction.getDescription() : "Tidak ada keterangan") + "</li>" +
                 "  </ul>" +
                 "  <p>Terima kasih telah memilih SimpleBank. Jika Anda memiliki pertanyaan atau memerlukan bantuan lebih lanjut, " +
@@ -63,7 +63,7 @@ public class EmailTemplate {
                 "    <li><strong>ID Transaksi:</strong> " + transaction.getId() + "</li>" +
                 "    <li><strong>Nama Merchant:</strong> " + transaction.getRecipientTargetName() + "</li>" +
                 "    <li><strong>Jumlah Pembayaran:</strong> " + transaction.getAmount() + "</li>" +
-                "    <li><strong>Tanggal & Waktu:</strong> " + Config.formatDate("E, MMMM dd yyyy", transaction.getCreatedDate()) + " & " + Config.formatDate("HH:mm:ss", transaction.getCreatedDate()) + " WIB</li>" +
+                "    <li><strong>Tanggal & Waktu:</strong> " + Config.formatDate("dd MMMM yyyy", transaction.getCreatedDate()) + " & " + Config.formatDate("HH:mm", transaction.getCreatedDate()) + " WIB</li>" +
                 "    <li><strong>Keterangan:</strong> " + (transaction.getDescription() != null ? transaction.getDescription() : "Tidak ada keterangan") + "</li>" +
                 "  </ul>" +
                 "  <p>Terima kasih telah memilih SimpleBank. Jika Anda memiliki pertanyaan atau memerlukan bantuan lebih lanjut, " +
