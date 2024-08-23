@@ -28,6 +28,8 @@ public class AuthMapper {
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .bornDate(user.getBornDate().toString())
+                .address(user.getAddress())
+                .nik(user.getNik())
                 .build();
     }
 }

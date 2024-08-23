@@ -55,6 +55,12 @@ public class User extends BaseDate implements UserDetails {
 
     private Date otpExpiredDate;
 
+    @Column(name = "nik", nullable = false)
+    private String nik;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
     @JsonIgnore
     private boolean enabled = true;
 
